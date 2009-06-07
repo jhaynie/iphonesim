@@ -46,7 +46,7 @@
     fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  showsdks\n");
-    fprintf(stderr, "  launch <application path>\n");
+    fprintf(stderr, "  launch <application path> [sdkversion]\n");
 }
 
 
@@ -89,7 +89,6 @@
  */
 - (int) launchApp: (NSString *) path {
     DTiPhoneSimulatorApplicationSpecifier *appSpec;
-    DTiPhoneSimulatorSystemRoot *sdkRoot;
     DTiPhoneSimulatorSessionConfig *config;
     DTiPhoneSimulatorSession *session;
     NSError *error;
@@ -103,7 +102,7 @@
     nsprintf(@"App Spec: %@\n", appSpec);
 
     /* Load the default SDK root */
-    sdkRoot = [DTiPhoneSimulatorSystemRoot defaultRoot];
+    
     nsprintf(@"SDK Root: %@\n", sdkRoot);
 
     /* Set up the session configuration */
@@ -122,7 +121,7 @@
     [session setDelegate: self];
     [session setSimulatedApplicationPID: [NSNumber numberWithInt: 35]];
 
-    if (![session requestStartWithConfig: config timeout: 10 error: &error]) {
+    if (![session requestStartWithConfig: config timeout: 30 error: &error]) {
         nsprintf(@"Could not start simulator session: %@", error);
         return EXIT_FAILURE;
     }
@@ -150,6 +149,27 @@
             fprintf(stderr, "Missing application path argument\n");
             [self printUsage];
             exit(EXIT_FAILURE);
+        }
+        if (argc > 3) {
+            NSString* ver = [NSString stringWithCString:argv[3]];
+            NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
+            for (DTiPhoneSimulatorSystemRoot *root in roots) {
+                NSString *v = [root sdkVersion];
+                if ([v isEqualToString:ver])
+                {
+                    sdkRoot = root;
+                    break;
+                }
+            }
+            if (sdkRoot == nil)
+            {
+                fprintf(stderr,"Unknown or unsupported SDK version: %s\n",argv[3]);
+                [self showSDKs];
+                exit(EXIT_FAILURE);
+            }
+        }
+        else {
+            sdkRoot = [DTiPhoneSimulatorSystemRoot defaultRoot];
         }
 
         /* Don't exit, adds to runloop */
