@@ -87,6 +87,9 @@
 - (id)localizedClientName;
 - (void)setLocalizedClientName:(id)fp8;
 
+// Added in 3.2 to support iPad/iPhone device families
+- (void)setSimulatedDeviceFamily:(NSNumber*)family;
+
 @end
 
 

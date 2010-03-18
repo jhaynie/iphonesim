@@ -33,7 +33,6 @@
 #import "iPhoneSimulator.h"
 #import "nsprintf.h"
 
-
 /**
  * A simple iPhoneSimulatorRemoteClient framework.
  */
@@ -46,7 +45,7 @@
     fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  showsdks\n");
-    fprintf(stderr, "  launch <application path> [sdkversion]\n");
+    fprintf(stderr, "  launch <application path> [sdkversion] [family]\n");
 }
 
 
@@ -56,16 +55,16 @@
 - (int) showSDKs {
     NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
 
-    nsprintf(@"Simulator SDK Roots:\n");
+    nsprintf(@"Simulator SDK Roots:");
     for (DTiPhoneSimulatorSystemRoot *root in roots) {
-        nsfprintf(stderr, @"'%@' (%@)\n\t%@\n", [root sdkDisplayName], [root sdkVersion], [root sdkRootPath]);
+        nsfprintf(stderr, @"'%@' (%@)\n\t%@", [root sdkDisplayName], [root sdkVersion], [root sdkRootPath]);
     }
 
     return EXIT_SUCCESS;
 }
 
 - (void) session: (DTiPhoneSimulatorSession *) session didEndWithError: (NSError *) error {
-    nsprintf(@"Session did end with error %@\n", error);
+    nsprintf(@"Session did end with error %@", error);
     
     if (error != nil)
         exit(EXIT_FAILURE);
@@ -76,7 +75,7 @@
 
 - (void) session: (DTiPhoneSimulatorSession *) session didStart: (BOOL) started withError: (NSError *) error {
     if (started) {
-        nsprintf(@"Session started\n");
+        nsprintf(@"Session started");
     } else {
         nsprintf(@"Session could not be started: %@", error);
         exit(EXIT_FAILURE);
@@ -87,7 +86,7 @@
 /**
  * Launch the given Simulator binary.
  */
-- (int) launchApp: (NSString *) path {
+- (int) launchApp: (NSString *) path withFamily:(NSString*)family {
     DTiPhoneSimulatorApplicationSpecifier *appSpec;
     DTiPhoneSimulatorSessionConfig *config;
     DTiPhoneSimulatorSession *session;
@@ -99,11 +98,11 @@
         nsprintf(@"Could not load application specification for %s", path);
         return EXIT_FAILURE;
     }
-    nsprintf(@"App Spec: %@\n", appSpec);
+    nsprintf(@"App Spec: %@", appSpec);
 
     /* Load the default SDK root */
     
-    nsprintf(@"SDK Root: %@\n", sdkRoot);
+    nsprintf(@"SDK Root: %@", sdkRoot);
 
     /* Set up the session configuration */
     config = [[[DTiPhoneSimulatorSessionConfig alloc] init] autorelease];
@@ -115,6 +114,26 @@
     [config setSimulatedApplicationLaunchEnvironment: [NSDictionary dictionary]];
 
     [config setLocalizedClientName: @"TitaniumDeveloper"];
+
+	if (family == nil && [config respondsToSelector:@selector(setSimulatedDeviceFamily:)])
+	{
+		family = @"iphone";
+	}
+	
+	if (family!=nil)
+	{
+		nsprintf(@"using device family %@",family);
+		
+		if ([family isEqualToString:@"ipad"])
+		{
+			[config setSimulatedDeviceFamily:[NSNumber numberWithInt:2]];
+		}
+		else
+		{
+			[config setSimulatedDeviceFamily:[NSNumber numberWithInt:1]];
+		}
+	}
+
 
     /* Start the session */
     session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
@@ -151,7 +170,7 @@
             exit(EXIT_FAILURE);
         }
         if (argc > 3) {
-            NSString* ver = [NSString stringWithCString:argv[3]];
+            NSString* ver = [NSString stringWithCString:argv[3] encoding:NSUTF8StringEncoding];
             NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
             for (DTiPhoneSimulatorSystemRoot *root in roots) {
                 NSString *v = [root sdkVersion];
@@ -173,7 +192,12 @@
         }
 
         /* Don't exit, adds to runloop */
-        [self launchApp: [NSString stringWithUTF8String: argv[2]]];
+		NSString *family = nil;
+		if (argc > 4)
+		{
+			family = [NSString stringWithUTF8String:argv[4]];
+		}
+        [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family];
     } else {
         fprintf(stderr, "Unknown command\n");
         [self printUsage];
