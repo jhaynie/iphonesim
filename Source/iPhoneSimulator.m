@@ -45,7 +45,7 @@
     fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  showsdks\n");
-    fprintf(stderr, "  launch <application path> [sdkversion] [family]\n");
+    fprintf(stderr, "  launch <application path> [sdkversion] [family] [uuid]\n");
 }
 
 
@@ -86,7 +86,7 @@
 /**
  * Launch the given Simulator binary.
  */
-- (int) launchApp: (NSString *) path withFamily:(NSString*)family {
+- (int) launchApp: (NSString *) path withFamily:(NSString*)family uuid:(NSString*)uuid{
     DTiPhoneSimulatorApplicationSpecifier *appSpec;
     DTiPhoneSimulatorSessionConfig *config;
     DTiPhoneSimulatorSession *session;
@@ -115,15 +115,16 @@
 
     [config setLocalizedClientName: @"TitaniumDeveloper"];
 
-	if (family == nil && [config respondsToSelector:@selector(setSimulatedDeviceFamily:)])
+	// this was introduced in 3.2 of SDK
+	if ([config respondsToSelector:@selector(setSimulatedDeviceFamily:)])
 	{
-		family = @"iphone";
-	}
-	
-	if (family!=nil)
-	{
+		if (family == nil)
+		{
+			family = @"iphone";
+		}
+
 		nsprintf(@"using device family %@",family);
-		
+
 		if ([family isEqualToString:@"ipad"])
 		{
 			[config setSimulatedDeviceFamily:[NSNumber numberWithInt:2]];
@@ -134,11 +135,14 @@
 		}
 	}
 
-
     /* Start the session */
     session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
     [session setDelegate: self];
     [session setSimulatedApplicationPID: [NSNumber numberWithInt: 35]];
+	if (uuid!=nil)
+	{
+		[session setUuid:uuid];
+	}
 
     if (![session requestStartWithConfig: config timeout: 30 error: &error]) {
         nsprintf(@"Could not start simulator session: %@", error);
@@ -193,11 +197,16 @@
 
         /* Don't exit, adds to runloop */
 		NSString *family = nil;
+		NSString *uuid = nil;
 		if (argc > 4)
 		{
 			family = [NSString stringWithUTF8String:argv[4]];
 		}
-        [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family];
+		if (argc > 5)
+		{
+			uuid = [NSString stringWithUTF8String:argv[5]];
+		}
+        [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family uuid:uuid];
     } else {
         fprintf(stderr, "Unknown command\n");
         [self printUsage];
