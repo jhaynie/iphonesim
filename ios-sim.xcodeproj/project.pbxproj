@@ -195,7 +195,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				FRAMEWORK_SEARCH_PATHS = /Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks;
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -205,11 +205,11 @@
 				OTHER_LDFLAGS = (
 					"-framework",
 					AppKit,
-					"-F/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
+					"-F$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
 					"-framework",
 					iPhoneSimulatorRemoteClient,
 					"-Wl,-rpath",
-					"-Wl,/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
+					"-Wl,$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
 				);
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
@@ -221,7 +221,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				FRAMEWORK_SEARCH_PATHS = /Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks;
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -230,11 +230,11 @@
 				OTHER_LDFLAGS = (
 					"-framework",
 					AppKit,
-					"-F/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
+					"-F$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
 					"-framework",
 					iPhoneSimulatorRemoteClient,
 					"-Wl,-rpath",
-					"-Wl,/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
+					"-Wl,$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
 				);
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
