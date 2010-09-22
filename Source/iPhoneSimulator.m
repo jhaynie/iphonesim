@@ -76,6 +76,7 @@
 - (void) session: (DTiPhoneSimulatorSession *) session didStart: (BOOL) started withError: (NSError *) error {
     if (started) {
         nsprintf(@"Session started");
+		exit(EXIT_SUCCESS);
     } else {
         nsprintf(@"Session could not be started: %@", error);
         exit(EXIT_FAILURE);
