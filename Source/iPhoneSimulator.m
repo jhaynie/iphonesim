@@ -45,7 +45,7 @@
     fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  showsdks\n");
-    fprintf(stderr, "  launch <application path> [-sdk <sdkversion>] [-family <family>] [-uuid <uuid>] [-env <environment file path>] [-args <remaining arguments passed through to launched application>]\n");
+    fprintf(stderr, "  launch <application path> [-sdk <sdkversion>] [-family <family>] [-uuid <uuid>] [-env <environment file path>] [-stdout <path to stdout file>] [-stderr <path to stderr file>] [-args <remaining arguments passed through to launched application>]\n");
 }
 
 
@@ -86,7 +86,7 @@
 /**
  * Launch the given Simulator binary.
  */
-- (int) launchApp: (NSString *) path withFamily:(NSString*)family uuid:(NSString*)uuid environment:(NSDictionary *) environment args: (NSArray *) args {
+- (int) launchApp: (NSString *) path withFamily:(NSString*)family uuid:(NSString*)uuid environment:(NSDictionary *) environment stdoutPath: (NSString *) stdoutPath stderrPath: (NSString *) stderrPath args: (NSArray *) args{
     DTiPhoneSimulatorApplicationSpecifier *appSpec;
     DTiPhoneSimulatorSessionConfig *config;
     DTiPhoneSimulatorSession *session;
@@ -112,6 +112,14 @@
 
     [config setSimulatedApplicationLaunchArgs: args];
     [config setSimulatedApplicationLaunchEnvironment: environment];
+	
+	if (stderrPath) {
+		[config setSimulatedApplicationStdErrPath:stderrPath];	
+	}
+	
+	if (stdoutPath) {
+		[config setSimulatedApplicationStdOutPath:stdoutPath];	
+	}
 
     [config setLocalizedClientName: @"TitaniumDeveloper"];
 
@@ -176,6 +184,8 @@
 		
 		NSString *family = nil;
 		NSString *uuid = nil;
+		NSString *stdoutPath = nil;
+		NSString *stderrPath = nil;
 		NSDictionary *environment = [NSDictionary dictionary];
 		int i = 3;
 		for (; i < argc; i++) {
@@ -211,6 +221,12 @@
 					[self printUsage];
 					exit(EXIT_FAILURE);
 				}
+			} else if (strcmp(argv[i], "-stdout") == 0) {
+				i++;
+				stdoutPath = [NSString stringWithUTF8String:argv[i]];
+			} else if (strcmp(argv[i], "-stderr") == 0) {
+				i++;
+				stderrPath = [NSString stringWithUTF8String:argv[i]];
 			} else if (strcmp(argv[i], "-args") == 0) {
 				i++;
 				break;
@@ -226,7 +242,7 @@
         }
 
         /* Don't exit, adds to runloop */
-        [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family uuid:uuid environment:environment args:args];
+        [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family uuid:uuid environment:environment stdoutPath:stdoutPath stderrPath:stderrPath args:args];
     } else {
         fprintf(stderr, "Unknown command\n");
         [self printUsage];
