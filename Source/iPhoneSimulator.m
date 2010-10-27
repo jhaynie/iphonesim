@@ -45,7 +45,7 @@
     fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  showsdks\n");
-    fprintf(stderr, "  launch <application path> [-sdk <sdkversion>] [-family <family>] [-uuid <uuid>] [-env <environment file path>] [-stdout <path to stdout file>] [-stderr <path to stderr file>] [-args <remaining arguments passed through to launched application>]\n");
+    fprintf(stderr, "  launch <application path> [-verbose] [-sdk <sdkversion>] [-family <family>] [-uuid <uuid>] [-env <environment file path>] [-stdout <path to stdout file>] [-stderr <path to stderr file>] [-args <remaining arguments passed through to launched application>]\n");
 }
 
 
@@ -64,7 +64,9 @@
 }
 
 - (void) session: (DTiPhoneSimulatorSession *) session didEndWithError: (NSError *) error {
-    nsprintf(@"Session did end with error %@", error);
+	if (verbose) {
+	    nsprintf(@"Session did end with error %@", error);	
+	}
     
     if (error != nil)
         exit(EXIT_FAILURE);
@@ -75,7 +77,9 @@
 
 - (void) session: (DTiPhoneSimulatorSession *) session didStart: (BOOL) started withError: (NSError *) error {
     if (started) {
-        nsprintf(@"Session started");
+		if (verbose) {
+			nsprintf(@"Session started");	
+		}
     } else {
         nsprintf(@"Session could not be started: %@", error);
         exit(EXIT_FAILURE);
@@ -98,11 +102,13 @@
         nsprintf(@"Could not load application specification for %s", path);
         return EXIT_FAILURE;
     }
-    nsprintf(@"App Spec: %@", appSpec);
-	
-    /* Load the default SDK root */
-    
-    nsprintf(@"SDK Root: %@", sdkRoot);
+	if (verbose) {
+		nsprintf(@"App Spec: %@", appSpec);
+		
+		/* Load the default SDK root */
+		
+		nsprintf(@"SDK Root: %@", sdkRoot);	
+	}
 
     /* Set up the session configuration */
     config = [[[DTiPhoneSimulatorSessionConfig alloc] init] autorelease];
@@ -131,7 +137,9 @@
 			family = @"iphone";
 		}
 
-		nsprintf(@"using device family %@",family);
+		if (verbose) {
+			nsprintf(@"using device family %@",family);	
+		}
 
 		if ([family isEqualToString:@"ipad"])
 		{
@@ -189,7 +197,10 @@
 		NSDictionary *environment = [NSDictionary dictionary];
 		int i = 3;
 		for (; i < argc; i++) {
-			if (strcmp(argv[i], "-sdk") == 0) {
+			if (strcmp(argv[i], "-verbose") ==0) {
+				verbose = YES;
+			}
+			else if (strcmp(argv[i], "-sdk") == 0) {
 				i++;
 				NSString* ver = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
 				NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
@@ -230,6 +241,10 @@
 			} else if (strcmp(argv[i], "-args") == 0) {
 				i++;
 				break;
+			} else {
+				fprintf(stderr, "unrecognized argument:%s\n", argv[i]);
+				[self printUsage];
+				exit(EXIT_FAILURE);
 			}
 		}
 		NSMutableArray *args = [NSMutableArray arrayWithCapacity:argc - i];
