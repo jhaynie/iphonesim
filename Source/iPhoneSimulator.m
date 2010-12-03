@@ -45,7 +45,7 @@
     fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  showsdks\n");
-    fprintf(stderr, "  launch <application path> [-verbose] [-sdk <sdkversion>] [-family <family>] [-uuid <uuid>] [-env <environment file path>] [-stdout <path to stdout file>] [-stderr <path to stderr file>] [-args <remaining arguments passed through to launched application>]\n");
+    fprintf(stderr, "  launch <application path> [-verbose] [-sdk <sdkversion>] [-family <family>] [-uuid <uuid>] [-env <environment file path>] [-setenv NAME=VALUE] [-stdout <path to stdout file>] [-stderr <path to stderr file>] [-args <remaining arguments passed through to launched application>]\n");
 }
 
 
@@ -65,9 +65,9 @@
 
 - (void) session: (DTiPhoneSimulatorSession *) session didEndWithError: (NSError *) error {
 	if (verbose) {
-	    nsprintf(@"Session did end with error %@", error);	
+	    nsprintf(@"Session did end with error %@", error);
 	}
-    
+
     if (error != nil)
         exit(EXIT_FAILURE);
 
@@ -78,7 +78,7 @@
 - (void) session: (DTiPhoneSimulatorSession *) session didStart: (BOOL) started withError: (NSError *) error {
     if (started) {
 		if (verbose) {
-			nsprintf(@"Session started");	
+			nsprintf(@"Session started");
 		}
     } else {
         nsprintf(@"Session could not be started: %@", error);
@@ -104,10 +104,14 @@
     }
 	if (verbose) {
 		nsprintf(@"App Spec: %@", appSpec);
-		
+
 		/* Load the default SDK root */
-		
-		nsprintf(@"SDK Root: %@", sdkRoot);	
+
+		nsprintf(@"SDK Root: %@", sdkRoot);
+
+		for (id key in environment) {
+			nsprintf(@"Env: %@ = %@", key, [environment objectForKey:key]);
+		}
 	}
 
     /* Set up the session configuration */
@@ -118,13 +122,13 @@
 
     [config setSimulatedApplicationLaunchArgs: args];
     [config setSimulatedApplicationLaunchEnvironment: environment];
-	
+
 	if (stderrPath) {
-		[config setSimulatedApplicationStdErrPath:stderrPath];	
+		[config setSimulatedApplicationStdErrPath:stderrPath];
 	}
-	
+
 	if (stdoutPath) {
-		[config setSimulatedApplicationStdOutPath:stdoutPath];	
+		[config setSimulatedApplicationStdOutPath:stdoutPath];
 	}
 
     [config setLocalizedClientName: @"TitaniumDeveloper"];
@@ -138,7 +142,7 @@
 		}
 
 		if (verbose) {
-			nsprintf(@"using device family %@",family);	
+			nsprintf(@"using device family %@",family);
 		}
 
 		if ([family isEqualToString:@"ipad"])
@@ -189,12 +193,12 @@
             [self printUsage];
             exit(EXIT_FAILURE);
         }
-		
+
 		NSString *family = nil;
 		NSString *uuid = nil;
 		NSString *stdoutPath = nil;
 		NSString *stderrPath = nil;
-		NSDictionary *environment = [NSDictionary dictionary];
+		NSMutableDictionary *environment = [NSMutableDictionary dictionary];
 		int i = 3;
 		for (; i < argc; i++) {
 			if (strcmp(argv[i], "-verbose") ==0) {
@@ -224,6 +228,10 @@
 			} else if (strcmp(argv[i], "-uuid") == 0) {
 				i++;
 				uuid = [NSString stringWithUTF8String:argv[i]];
+			} else if (strcmp(argv[i], "-setenv") == 0) {
+        i++;
+        NSArray *parts = [[NSString stringWithUTF8String:argv[i]] componentsSeparatedByString:@"="];
+        [environment setObject:[parts objectAtIndex:1] forKey:[parts objectAtIndex:0]];
 			} else if (strcmp(argv[i], "-env") == 0) {
 				i++;
 				environment = [NSDictionary dictionaryWithContentsOfFile:[NSString stringWithUTF8String:argv[i]]];
@@ -251,7 +259,7 @@
 		for (; i < argc; i++) {
 			[args addObject:[NSString stringWithUTF8String:argv[i]]];
 		}
-		
+
         if (sdkRoot == nil) {
             sdkRoot = [DTiPhoneSimulatorSystemRoot defaultRoot];
         }
