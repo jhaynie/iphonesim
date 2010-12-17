@@ -24,11 +24,17 @@ Through homebrew:
 
     $ brew install ios-sim
 
+Download an archive:
+
+    $ curl -O http://cloud.github.com/downloads/Fingertips/ios-sim/io-sim-1.0.zip
+    $ unzip ios-sim-1.0.zip
+    $ mv ios-sim-1.0/ios-sim /usr/local/bin/
+
 Or from a git clone:
 
     $ git clone git://github.com/Fingertips/ios-sim.git
     $ xcodebuild
-    $ ./build/Release/ios-sim
+    $ mv build/Release/ios-sim /usr/local/bin/
 
 License
 -------
