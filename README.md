@@ -18,8 +18,6 @@ See the `--help` option for more info.
 Installation
 ------------
 
-TODO: make this all work!
-
 Through homebrew:
 
     $ brew install ios-sim
