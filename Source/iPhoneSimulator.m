@@ -32,6 +32,8 @@
 
 #import "iPhoneSimulator.h"
 #import "nsprintf.h"
+#import <sys/types.h>
+#import <sys/stat.h>
 
 /**
  * A simple iPhoneSimulatorRemoteClient framework.
@@ -68,6 +70,26 @@
     nsprintf(@"Session did end with error %@", error);
   }
 
+  if (stderrFileHandle != nil) {
+    NSString *stderrPath = [[session sessionConfig] simulatedApplicationStdErrPath];
+    NSLog(@"Cleanup named pipe at `%@'", stderrPath);
+    [stderrFileHandle closeFile];
+    [stderrFileHandle release];
+    if (![[NSFileManager defaultManager] removeItemAtPath:stderrPath error:NULL]) {
+      nsprintf(@"Unable to delete named pipe `%@'", stderrPath);
+    }
+  }
+
+  if (stdoutFileHandle != nil) {
+    NSString *stdoutPath = [[session sessionConfig] simulatedApplicationStdOutPath];
+    NSLog(@"Cleanup named pipe at `%@'", stdoutPath);
+    [stdoutFileHandle closeFile];
+    [stdoutFileHandle release];
+    if (![[NSFileManager defaultManager] removeItemAtPath:stdoutPath error:NULL]) {
+      nsprintf(@"Unable to delete named pipe `%@'", stdoutPath);
+    }
+  }
+
   if (error != nil) {
     exit(EXIT_FAILURE);
   }
@@ -87,6 +109,15 @@
   }
 }
 
+- (void)stdioDataIsAvailable:(NSNotification *)notification {
+  NSData *data = [[notification userInfo] valueForKey:NSFileHandleNotificationDataItem];
+  NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  if ([notification object] == stdoutFileHandle) {
+    printf("%s", [str UTF8String]);
+  } else {
+    NSLog(@"%@", str);
+  }
+}
 
 /**
  * Launch the given Simulator binary.
@@ -127,12 +158,44 @@
   [config setSimulatedApplicationLaunchEnvironment:environment];
 
   if (stderrPath) {
-    [config setSimulatedApplicationStdErrPath:stderrPath];
+    stderrFileHandle = nil;
+  } else {
+    stderrPath = [NSString stringWithFormat:@"/tmp/iphonesim-stderr-pipe-%d", (int)time(NULL)];
+    if (mkfifo([stderrPath UTF8String], S_IRUSR | S_IWUSR) == -1) {
+      NSLog(@"Unable to create stderr named pipe `%@'", stderrPath);
+      abort();
+    } else {
+      NSLog(@"Created stderr pipe at `%@'\n", stderrPath);
+      int fd = open([stderrPath UTF8String], O_RDONLY | O_NDELAY);
+      stderrFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fd];
+      [stderrFileHandle readInBackgroundAndNotify];
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(stdioDataIsAvailable:)
+                                                   name:NSFileHandleReadCompletionNotification
+                                                 object:stderrFileHandle];
+    }
   }
+  [config setSimulatedApplicationStdErrPath:stderrPath];
 
   if (stdoutPath) {
-    [config setSimulatedApplicationStdOutPath:stdoutPath];
+    stdoutFileHandle = nil;
+  } else {
+    stdoutPath = [NSString stringWithFormat:@"/tmp/iphonesim-stdout-pipe-%d", (int)time(NULL)];
+    if (mkfifo([stdoutPath UTF8String], S_IRUSR | S_IWUSR) == -1) {
+      NSLog(@"Unable to create stdout named pipe `%@'", stdoutPath);
+      abort();
+    } else {
+      NSLog(@"Created stdout pipe at `%@'\n", stdoutPath);
+      int fd = open([stdoutPath UTF8String], O_RDONLY | O_NDELAY);
+      stdoutFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fd];
+      [stdoutFileHandle readInBackgroundAndNotify];
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(stdioDataIsAvailable:)
+                                                   name:NSFileHandleReadCompletionNotification
+                                                 object:stdoutFileHandle];
+    }
   }
+  [config setSimulatedApplicationStdOutPath:stdoutPath];
 
   [config setLocalizedClientName: @"TitaniumDeveloper"];
 

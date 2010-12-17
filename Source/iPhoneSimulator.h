@@ -36,6 +36,8 @@
 @interface iPhoneSimulator : NSObject <DTiPhoneSimulatorSessionDelegate> {
 @private
   DTiPhoneSimulatorSystemRoot *sdkRoot;
+  NSFileHandle *stdoutFileHandle;
+  NSFileHandle *stderrFileHandle;
   BOOL verbose;
 }
 
