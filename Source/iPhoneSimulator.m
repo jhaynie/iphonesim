@@ -187,7 +187,7 @@
   }
   [config setSimulatedApplicationStdOutPath:stdoutPath];
 
-  [config setLocalizedClientName: @"TitaniumDeveloper"];
+  [config setLocalizedClientName: @"iphonesim"];
 
   // this was introduced in 3.2 of SDK
   if ([config respondsToSelector:@selector(setSimulatedDeviceFamily:)]) {
