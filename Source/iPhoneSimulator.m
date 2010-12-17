@@ -40,14 +40,23 @@
  */
 @implementation iPhoneSimulator
 
-/**
- * Print usage.
- */
 - (void) printUsage {
-  fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
+  fprintf(stderr, "Usage: iphonesim <command> <options> [--args ...]\n");
+  fprintf(stderr, "\n");
   fprintf(stderr, "Commands:\n");
-  fprintf(stderr, "  showsdks\n");
-  fprintf(stderr, "  launch <application path> [-verbose] [-sdk <sdkversion>] [-family <family>] [-uuid <uuid>] [-env <environment file path>] [-setenv NAME=VALUE] [-stdout <path to stdout file>] [-stderr <path to stderr file>] [-args <remaining arguments passed through to launched application>]\n");
+  fprintf(stderr, "  showsdks                        List the available iOS SDK versions\n");
+  fprintf(stderr, "  launch <application path>       Launch the application at the specified path on the iOS Simulator\n");
+  fprintf(stderr, "\n");
+  fprintf(stderr, "Options:\n");
+  fprintf(stderr, "  --verbose                       Set the output level to verbose\n");
+  fprintf(stderr, "  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)\n");
+  fprintf(stderr, "  --family <device family>        The device type that should be simulated (defaults to `iphone')\n");
+  fprintf(stderr, "  --uuid <uuid>                   A UUID identifying the session (is that correct?)\n");
+  fprintf(stderr, "  --env <environment file path>   A plist file containing environment key-value pairs that should be set\n");
+  fprintf(stderr, "  --setenv NAME=VALUE             Set an environment variable\n");
+  fprintf(stderr, "  --stdout <stdout file path>     The path where stdout of the simulator will be redirected to (defaults to stdout of iphonesim)\n");
+  fprintf(stderr, "  --stderr <stderr file path>     The path where stderr of the simulator will be redirected to (defaults to stderr of iphonesim)\n");
+  fprintf(stderr, "  --args <...>                    All following arguments will be passed on to the application\n");
 }
 
 
@@ -253,10 +262,10 @@
     NSMutableDictionary *environment = [NSMutableDictionary dictionary];
     int i = 3;
     for (; i < argc; i++) {
-      if (strcmp(argv[i], "-verbose") ==0) {
+      if (strcmp(argv[i], "--verbose") ==0) {
         verbose = YES;
       }
-      else if (strcmp(argv[i], "-sdk") == 0) {
+      else if (strcmp(argv[i], "--sdk") == 0) {
         i++;
         NSString* ver = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
         NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
@@ -272,17 +281,17 @@
           [self showSDKs];
           exit(EXIT_FAILURE);
         }
-      } else if (strcmp(argv[i], "-family") == 0) {
+      } else if (strcmp(argv[i], "--family") == 0) {
         i++;
         family = [NSString stringWithUTF8String:argv[i]];
-      } else if (strcmp(argv[i], "-uuid") == 0) {
+      } else if (strcmp(argv[i], "--uuid") == 0) {
         i++;
         uuid = [NSString stringWithUTF8String:argv[i]];
-      } else if (strcmp(argv[i], "-setenv") == 0) {
+      } else if (strcmp(argv[i], "--setenv") == 0) {
         i++;
         NSArray *parts = [[NSString stringWithUTF8String:argv[i]] componentsSeparatedByString:@"="];
         [environment setObject:[parts objectAtIndex:1] forKey:[parts objectAtIndex:0]];
-      } else if (strcmp(argv[i], "-env") == 0) {
+      } else if (strcmp(argv[i], "--env") == 0) {
         i++;
         environment = [NSDictionary dictionaryWithContentsOfFile:[NSString stringWithUTF8String:argv[i]]];
         if (!environment) {
@@ -290,13 +299,13 @@
           [self printUsage];
           exit(EXIT_FAILURE);
         }
-      } else if (strcmp(argv[i], "-stdout") == 0) {
+      } else if (strcmp(argv[i], "--stdout") == 0) {
         i++;
         stdoutPath = [NSString stringWithUTF8String:argv[i]];
-      } else if (strcmp(argv[i], "-stderr") == 0) {
+      } else if (strcmp(argv[i], "--stderr") == 0) {
         i++;
         stderrPath = [NSString stringWithUTF8String:argv[i]];
-      } else if (strcmp(argv[i], "-args") == 0) {
+      } else if (strcmp(argv[i], "--args") == 0) {
         i++;
         break;
       } else {
