@@ -20,6 +20,7 @@
   fprintf(stderr, "  launch <application path>       Launch the application at the specified path on the iOS Simulator\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Options:\n");
+  fprintf(stderr, "  --version                       Print the version of ios-sim\n");
   fprintf(stderr, "  --help                          Show this help text\n");
   fprintf(stderr, "  --verbose                       Set the output level to verbose\n");
   fprintf(stderr, "  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)\n");
@@ -233,7 +234,10 @@
     NSMutableDictionary *environment = [NSMutableDictionary dictionary];
     int i = 3;
     for (; i < argc; i++) {
-      if (strcmp(argv[i], "--help") == 0) {
+      if (strcmp(argv[i], "--version") == 0) {
+        printf("%s\n", IOS_SIM_VERSION);
+        exit(EXIT_SUCCESS);
+      } else if (strcmp(argv[i], "--help") == 0) {
         [self printUsage];
         exit(EXIT_SUCCESS);
       } else if (strcmp(argv[i], "--verbose") == 0) {
@@ -308,6 +312,9 @@
   } else {
     if (argc == 2 && strcmp(argv[1], "--help") == 0) {
       [self printUsage];
+      exit(EXIT_SUCCESS);
+    } else if (argc == 2 && strcmp(argv[1], "--version") == 0) {
+      printf("%s\n", IOS_SIM_VERSION);
       exit(EXIT_SUCCESS);
     } else {
       fprintf(stderr, "Unknown command\n");

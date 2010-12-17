@@ -5,6 +5,8 @@
 #import <Foundation/Foundation.h>
 #import <iPhoneSimulatorRemoteClient/iPhoneSimulatorRemoteClient.h>
 
+#define IOS_SIM_VERSION "1.0"
+
 @interface iPhoneSimulator : NSObject <DTiPhoneSimulatorSessionDelegate> {
 @private
   DTiPhoneSimulatorSystemRoot *sdkRoot;
