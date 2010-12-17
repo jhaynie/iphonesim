@@ -24,7 +24,7 @@ Through homebrew:
 
 Download an archive:
 
-    $ curl -O http://cloud.github.com/downloads/Fingertips/ios-sim/io-sim-1.0.zip
+    $ curl -O http://cloud.github.com/downloads/Fingertips/ios-sim/ios-sim-1.0.zip
     $ unzip ios-sim-1.0.zip
     $ mv ios-sim-1.0/ios-sim /usr/local/bin/
 
