@@ -33,4 +33,4 @@ License
 
 This project is available under the MIT license. See [LICENSE][license].
 
-[license] https://github.com/Fingertips/iphonesim/blob/master/LICENSE
+[license]: https://github.com/Fingertips/iphonesim/blob/master/LICENSE
