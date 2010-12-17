@@ -20,6 +20,7 @@
   fprintf(stderr, "  launch <application path>       Launch the application at the specified path on the iOS Simulator\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Options:\n");
+  fprintf(stderr, "  --help                          Show this help text\n");
   fprintf(stderr, "  --verbose                       Set the output level to verbose\n");
   fprintf(stderr, "  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)\n");
   fprintf(stderr, "  --family <device family>        The device type that should be simulated (defaults to `iphone')\n");
@@ -211,7 +212,6 @@
  * Execute 'main'
  */
 - (void)runWithArgc:(int)argc argv:(char **)argv {
-  /* Read the command */
   if (argc < 2) {
     [self printUsage];
     exit(EXIT_FAILURE);
@@ -220,7 +220,6 @@
   if (strcmp(argv[1], "showsdks") == 0) {
     exit([self showSDKs]);
   } else if (strcmp(argv[1], "launch") == 0) {
-    /* Requires an additional argument */
     if (argc < 3) {
       fprintf(stderr, "Missing application path argument\n");
       [self printUsage];
@@ -234,7 +233,10 @@
     NSMutableDictionary *environment = [NSMutableDictionary dictionary];
     int i = 3;
     for (; i < argc; i++) {
-      if (strcmp(argv[i], "--verbose") ==0) {
+      if (strcmp(argv[i], "--help") == 0) {
+        [self printUsage];
+        exit(EXIT_SUCCESS);
+      } else if (strcmp(argv[i], "--verbose") == 0) {
         verbose = YES;
       }
       else if (strcmp(argv[i], "--sdk") == 0) {
@@ -304,9 +306,14 @@
                                          stderrPath:stderrPath
                                                args:args];
   } else {
-    fprintf(stderr, "Unknown command\n");
-    [self printUsage];
-    exit(EXIT_FAILURE);
+    if (argc == 2 && strcmp(argv[1], "--help") == 0) {
+      [self printUsage];
+      exit(EXIT_SUCCESS);
+    } else {
+      fprintf(stderr, "Unknown command\n");
+      [self printUsage];
+      exit(EXIT_FAILURE);
+    }
   }
 }
 
