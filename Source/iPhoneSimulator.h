@@ -43,4 +43,7 @@
 
 - (void)runWithArgc:(int)argc argv:(char **)argv;
 
+- (void)createStdioFIFO:(NSFileHandle **)fileHandle ofType:(NSString *)type atPath:(NSString **)path;
+- (void)removeStdioFIFO:(NSFileHandle *)fileHandle atPath:(NSString *)path;
+
 @end

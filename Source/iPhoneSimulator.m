@@ -72,22 +72,12 @@
 
   if (stderrFileHandle != nil) {
     NSString *stderrPath = [[session sessionConfig] simulatedApplicationStdErrPath];
-    NSLog(@"Cleanup named pipe at `%@'", stderrPath);
-    [stderrFileHandle closeFile];
-    [stderrFileHandle release];
-    if (![[NSFileManager defaultManager] removeItemAtPath:stderrPath error:NULL]) {
-      nsprintf(@"Unable to delete named pipe `%@'", stderrPath);
-    }
+    [self removeStdioFIFO:stderrFileHandle atPath:stderrPath];
   }
 
   if (stdoutFileHandle != nil) {
     NSString *stdoutPath = [[session sessionConfig] simulatedApplicationStdOutPath];
-    NSLog(@"Cleanup named pipe at `%@'", stdoutPath);
-    [stdoutFileHandle closeFile];
-    [stdoutFileHandle release];
-    if (![[NSFileManager defaultManager] removeItemAtPath:stdoutPath error:NULL]) {
-      nsprintf(@"Unable to delete named pipe `%@'", stdoutPath);
-    }
+    [self removeStdioFIFO:stdoutFileHandle atPath:stdoutPath];
   }
 
   if (error != nil) {
@@ -116,6 +106,32 @@
     printf("%s", [str UTF8String]);
   } else {
     fprintf(stderr, "[STDERR] %s", [str UTF8String]);
+  }
+}
+
+- (void)createStdioFIFO:(NSFileHandle **)fileHandle ofType:(NSString *)type atPath:(NSString **)path {
+  *path = [NSString stringWithFormat:@"/tmp/iphonesim-%@-pipe-%d", type, (int)time(NULL)];
+  if (mkfifo([*path UTF8String], S_IRUSR | S_IWUSR) == -1) {
+    NSLog(@"Unable to create %@ named pipe `%@'", type, *path);
+    abort();
+  } else {
+    NSLog(@"Created named pipe `%@'\n", *path);
+    int fd = open([*path UTF8String], O_RDONLY | O_NDELAY);
+    *fileHandle = [[[NSFileHandle alloc] initWithFileDescriptor:fd] retain];
+    [*fileHandle readInBackgroundAndNotify];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(stdioDataIsAvailable:)
+                                                 name:NSFileHandleReadCompletionNotification
+                                               object:*fileHandle];
+  }
+}
+
+- (void)removeStdioFIFO:(NSFileHandle *)fileHandle atPath:(NSString *)path {
+  NSLog(@"Remove named pipe `%@'", path);
+  [fileHandle closeFile];
+  [fileHandle release];
+  if (![[NSFileManager defaultManager] removeItemAtPath:path error:NULL]) {
+    nsprintf(@"Unable to remove named pipe `%@'", path);
   }
 }
 
@@ -160,40 +176,14 @@
   if (stderrPath) {
     stderrFileHandle = nil;
   } else {
-    stderrPath = [NSString stringWithFormat:@"/tmp/iphonesim-stderr-pipe-%d", (int)time(NULL)];
-    if (mkfifo([stderrPath UTF8String], S_IRUSR | S_IWUSR) == -1) {
-      NSLog(@"Unable to create stderr named pipe `%@'", stderrPath);
-      abort();
-    } else {
-      NSLog(@"Created stderr pipe at `%@'\n", stderrPath);
-      int fd = open([stderrPath UTF8String], O_RDONLY | O_NDELAY);
-      stderrFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fd];
-      [stderrFileHandle readInBackgroundAndNotify];
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(stdioDataIsAvailable:)
-                                                   name:NSFileHandleReadCompletionNotification
-                                                 object:stderrFileHandle];
-    }
+    [self createStdioFIFO:&stderrFileHandle ofType:@"stderr" atPath:&stderrPath];
   }
   [config setSimulatedApplicationStdErrPath:stderrPath];
 
   if (stdoutPath) {
     stdoutFileHandle = nil;
   } else {
-    stdoutPath = [NSString stringWithFormat:@"/tmp/iphonesim-stdout-pipe-%d", (int)time(NULL)];
-    if (mkfifo([stdoutPath UTF8String], S_IRUSR | S_IWUSR) == -1) {
-      NSLog(@"Unable to create stdout named pipe `%@'", stdoutPath);
-      abort();
-    } else {
-      NSLog(@"Created stdout pipe at `%@'\n", stdoutPath);
-      int fd = open([stdoutPath UTF8String], O_RDONLY | O_NDELAY);
-      stdoutFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fd];
-      [stdoutFileHandle readInBackgroundAndNotify];
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(stdioDataIsAvailable:)
-                                                   name:NSFileHandleReadCompletionNotification
-                                                 object:stdoutFileHandle];
-    }
+    [self createStdioFIFO:&stdoutFileHandle ofType:@"stdout" atPath:&stdoutPath];
   }
   [config setSimulatedApplicationStdOutPath:stdoutPath];
 
