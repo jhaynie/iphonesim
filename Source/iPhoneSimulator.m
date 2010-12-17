@@ -115,7 +115,7 @@
   if ([notification object] == stdoutFileHandle) {
     printf("%s", [str UTF8String]);
   } else {
-    NSLog(@"%@", str);
+    fprintf(stderr, "[STDERR] %s", [str UTF8String]);
   }
 }
 
