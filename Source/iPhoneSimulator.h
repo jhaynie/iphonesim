@@ -25,18 +25,18 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
- /**
-  * Modifications made by Appcelerator, Inc. relicensed under
-  * the same license as above.
-  */
+/*
+ * Modifications made by Appcelerator, Inc. relicensed under
+ * the same license as above.
+ */
 
 #import <Foundation/Foundation.h>
 #import <iPhoneSimulatorRemoteClient/iPhoneSimulatorRemoteClient.h>
 
 @interface iPhoneSimulator : NSObject <DTiPhoneSimulatorSessionDelegate> {
 @private
-   DTiPhoneSimulatorSystemRoot *sdkRoot;
-   BOOL verbose;
+  DTiPhoneSimulatorSystemRoot *sdkRoot;
+  BOOL verbose;
 }
 
 - (void)runWithArgc:(int)argc argv:(char **)argv;
