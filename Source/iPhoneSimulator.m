@@ -104,7 +104,7 @@
   if ([notification object] == stdoutFileHandle) {
     printf("%s", [str UTF8String]);
   } else {
-    fprintf(stderr, "[STDERR] %s", [str UTF8String]);
+    nsprintf(str);
   }
 }
 
@@ -113,8 +113,11 @@
   *path = [NSString stringWithFormat:@"/tmp/iphonesim-%@-pipe-%d", type, (int)time(NULL)];
   if (mkfifo([*path UTF8String], S_IRUSR | S_IWUSR) == -1) {
     nsprintf(@"Unable to create %@ named pipe `%@'", type, *path);
-    abort();
+    exit(EXIT_FAILURE);
   } else {
+    if (verbose) {
+      nsprintf(@"Creating named pipe at `%@'", *path);
+    }
     int fd = open([*path UTF8String], O_RDONLY | O_NDELAY);
     *fileHandle = [[[NSFileHandle alloc] initWithFileDescriptor:fd] retain];
     [*fileHandle readInBackgroundAndNotify];
@@ -127,6 +130,9 @@
 
 
 - (void)removeStdioFIFO:(NSFileHandle *)fileHandle atPath:(NSString *)path {
+  if (verbose) {
+    nsprintf(@"Removing named pipe at `%@'", path);
+  }
   [fileHandle closeFile];
   [fileHandle release];
   if (![[NSFileManager defaultManager] removeItemAtPath:path error:NULL]) {
