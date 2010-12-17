@@ -25,9 +25,12 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * Modifications made by Appcelerator, Inc. licensed under the
- * same license as above.
+/*
+ * Modifications made by the following entities are licensed as above:
+ * - Appcelerator, Inc.
+ * - https://github.com/hborders
+ * - http://pivotallabs.com/users/scoward/blog
+ * - Eloy Duran, Fingertips <eloy@fngtps.com>
  */
 
 #import "iPhoneSimulator.h"
