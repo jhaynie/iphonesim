@@ -31,4 +31,6 @@ Or from a git clone:
 License
 -------
 
-This project is available under the MIT license. See LICENSE.
+This project is available under the MIT license. See [LICENSE].
+
+[LICENSE] https://github.com/Fingertips/iphonesim/blob/master/LICENSE
