@@ -51,9 +51,6 @@
 }
 
 
-/**
- * List available SDK roots.
- */
 - (int) showSDKs {
   NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
 
@@ -64,6 +61,7 @@
 
   return EXIT_SUCCESS;
 }
+
 
 - (void)session:(DTiPhoneSimulatorSession *)session didEndWithError:(NSError *)error {
   if (verbose) {
@@ -99,6 +97,7 @@
   }
 }
 
+
 - (void)stdioDataIsAvailable:(NSNotification *)notification {
   NSData *data = [[notification userInfo] valueForKey:NSFileHandleNotificationDataItem];
   NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
@@ -109,13 +108,13 @@
   }
 }
 
+
 - (void)createStdioFIFO:(NSFileHandle **)fileHandle ofType:(NSString *)type atPath:(NSString **)path {
   *path = [NSString stringWithFormat:@"/tmp/iphonesim-%@-pipe-%d", type, (int)time(NULL)];
   if (mkfifo([*path UTF8String], S_IRUSR | S_IWUSR) == -1) {
-    NSLog(@"Unable to create %@ named pipe `%@'", type, *path);
+    nsprintf(@"Unable to create %@ named pipe `%@'", type, *path);
     abort();
   } else {
-    NSLog(@"Created named pipe `%@'\n", *path);
     int fd = open([*path UTF8String], O_RDONLY | O_NDELAY);
     *fileHandle = [[[NSFileHandle alloc] initWithFileDescriptor:fd] retain];
     [*fileHandle readInBackgroundAndNotify];
@@ -126,8 +125,8 @@
   }
 }
 
+
 - (void)removeStdioFIFO:(NSFileHandle *)fileHandle atPath:(NSString *)path {
-  NSLog(@"Remove named pipe `%@'", path);
   [fileHandle closeFile];
   [fileHandle release];
   if (![[NSFileManager defaultManager] removeItemAtPath:path error:NULL]) {
@@ -135,9 +134,7 @@
   }
 }
 
-/**
- * Launch the given Simulator binary.
- */
+
 - (int)launchApp:(NSString *)path withFamily:(NSString *)family
                                         uuid:(NSString *)uuid
                                  environment:(NSDictionary *)environment
