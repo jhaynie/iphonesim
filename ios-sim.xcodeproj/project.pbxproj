@@ -32,8 +32,8 @@
 		24813649115A750000E3A9BA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Source/main.m; sourceTree = "<group>"; };
 		2481364A115A750000E3A9BA /* nsprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nsprintf.h; path = Source/nsprintf.h; sourceTree = "<group>"; };
 		2481364B115A750000E3A9BA /* nsprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = nsprintf.m; path = Source/nsprintf.m; sourceTree = "<group>"; };
-		32A70AAB03705E1F00C91783 /* iphonesim_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iphonesim_Prefix.pch; sourceTree = "<group>"; };
-		8DD76FA10486AA7600D96B5E /* iphonesim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = iphonesim; sourceTree = BUILT_PRODUCTS_DIR; };
+		32A70AAB03705E1F00C91783 /* ios-sim_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ios-sim_Prefix.pch"; sourceTree = "<group>"; };
+		8DD76FA10486AA7600D96B5E /* ios-sim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ios-sim"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +66,7 @@
 				24813649115A750000E3A9BA /* main.m */,
 				2481364A115A750000E3A9BA /* nsprintf.h */,
 				2481364B115A750000E3A9BA /* nsprintf.m */,
-				32A70AAB03705E1F00C91783 /* iphonesim_Prefix.pch */,
+				32A70AAB03705E1F00C91783 /* ios-sim_Prefix.pch */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -82,7 +82,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76FA10486AA7600D96B5E /* iphonesim */,
+				8DD76FA10486AA7600D96B5E /* ios-sim */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -90,9 +90,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8DD76F960486AA7600D96B5E /* iphonesim */ = {
+		8DD76F960486AA7600D96B5E /* ios-sim */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "iphonesim" */;
+			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "ios-sim" */;
 			buildPhases = (
 				8DD76F990486AA7600D96B5E /* Sources */,
 				8DD76F9B0486AA7600D96B5E /* Frameworks */,
@@ -102,10 +102,10 @@
 			);
 			dependencies = (
 			);
-			name = iphonesim;
+			name = "ios-sim";
 			productInstallPath = "$(HOME)/bin";
 			productName = iphonesim;
-			productReference = 8DD76FA10486AA7600D96B5E /* iphonesim */;
+			productReference = 8DD76FA10486AA7600D96B5E /* ios-sim */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -113,7 +113,7 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "iphonesim" */;
+			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "ios-sim" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -127,7 +127,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8DD76F960486AA7600D96B5E /* iphonesim */,
+				8DD76F960486AA7600D96B5E /* ios-sim */,
 			);
 		};
 /* End PBXProject section */
@@ -160,9 +160,9 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = iphonesim_Prefix.pch;
+				GCC_PREFIX_HEADER = "ios-sim_Prefix.pch";
 				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = iphonesim;
+				PRODUCT_NAME = "ios-sim";
 			};
 			name = Debug;
 		};
@@ -177,9 +177,9 @@
 				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = iphonesim_Prefix.pch;
+				GCC_PREFIX_HEADER = "ios-sim_Prefix.pch";
 				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = iphonesim;
+				PRODUCT_NAME = "ios-sim";
 			};
 			name = Release;
 		};
@@ -237,7 +237,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "iphonesim" */ = {
+		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "ios-sim" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB927508733DD40010E9CD /* Debug */,
@@ -246,7 +246,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "iphonesim" */ = {
+		1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "ios-sim" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB927908733DD40010E9CD /* Debug */,

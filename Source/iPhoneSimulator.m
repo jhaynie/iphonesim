@@ -13,7 +13,7 @@
 @implementation iPhoneSimulator
 
 - (void) printUsage {
-  fprintf(stderr, "Usage: iphonesim <command> <options> [--args ...]\n");
+  fprintf(stderr, "Usage: ios-sim <command> <options> [--args ...]\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Commands:\n");
   fprintf(stderr, "  showsdks                        List the available iOS SDK versions\n");

@@ -20,13 +20,13 @@ TODO: make this all work!
 
 Through homebrew:
 
-  $ brew install ios-sim
+    $ brew install ios-sim
 
 Or from a git clone:
 
-  $ git clone git://github.com/Fingertips/ios-sim.git
-  $ xcodebuild -project ios-sim.xcodeproj -configuration Release
-  $ ./build/Release/ios-sim
+    $ git clone git://github.com/Fingertips/ios-sim.git
+    $ xcodebuild
+    $ ./build/Release/ios-sim
 
 License
 -------
