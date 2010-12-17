@@ -13,6 +13,8 @@ Features
 * Pass arguments to the application.
 * See the stdout and stderr, or redirect them to files.
 
+See the `--help` option for more info.
+
 Installation
 ------------
 
