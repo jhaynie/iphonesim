@@ -39,6 +39,6 @@
    BOOL verbose;
 }
 
-- (void) runWithArgc: (int) argc argv: (char **) argv;
+- (void)runWithArgc:(int)argc argv:(char **)argv;
 
 @end
