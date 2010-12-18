@@ -12,3 +12,11 @@ task :install => :build do
     exit 1
   end
 end
+
+desc "Update README.md from README.template.md"
+task :readme do
+  version  = File.read('Source/version.h').match(/IOS_SIM_VERSION "([\d\.]+)"/)[1]
+  template = File.read('README.template.md')
+  rendered = template.gsub('{{VERSION}}', version)
+  File.open('README.md', 'w') { |f| f << rendered }
+end
