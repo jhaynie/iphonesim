@@ -3,6 +3,7 @@
  */
 
 #import "iPhoneSimulator.h"
+#import "NSString+expandPath.h"
 #import "nsprintf.h"
 #import <sys/types.h>
 #import <sys/stat.h>
@@ -227,6 +228,7 @@
       exit(EXIT_FAILURE);
     }
 
+    NSString *appPath = [[NSString stringWithUTF8String:argv[2]] expandPath];
     NSString *family = nil;
     NSString *uuid = nil;
     NSString *stdoutPath = nil;
@@ -271,7 +273,8 @@
         [environment setObject:[parts objectAtIndex:1] forKey:[parts objectAtIndex:0]];
       } else if (strcmp(argv[i], "--env") == 0) {
         i++;
-        environment = [NSDictionary dictionaryWithContentsOfFile:[NSString stringWithUTF8String:argv[i]]];
+        NSString *envFilePath = [[NSString stringWithUTF8String:argv[i]] expandPath];
+        environment = [NSDictionary dictionaryWithContentsOfFile:envFilePath];
         if (!environment) {
           fprintf(stderr, "Could not read environment from file: %s\n", argv[i]);
           [self printUsage];
@@ -279,10 +282,12 @@
         }
       } else if (strcmp(argv[i], "--stdout") == 0) {
         i++;
-        stdoutPath = [NSString stringWithUTF8String:argv[i]];
+        stdoutPath = [[NSString stringWithUTF8String:argv[i]] expandPath];
+        NSLog(@"stdoutPath: %@", stdoutPath);
       } else if (strcmp(argv[i], "--stderr") == 0) {
         i++;
-        stderrPath = [NSString stringWithUTF8String:argv[i]];
+        stderrPath = [[NSString stringWithUTF8String:argv[i]] expandPath];
+        NSLog(@"stderrPath: %@", stderrPath);
       } else if (strcmp(argv[i], "--args") == 0) {
         i++;
         break;
@@ -302,13 +307,13 @@
     }
 
     /* Don't exit, adds to runloop */
-    [self launchApp: [NSString stringWithUTF8String:argv[2]]
-                                         withFamily:family
-                                               uuid:uuid
-                                        environment:environment
-                                         stdoutPath:stdoutPath
-                                         stderrPath:stderrPath
-                                               args:args];
+    [self launchApp:appPath
+         withFamily:family
+               uuid:uuid
+        environment:environment
+         stdoutPath:stdoutPath
+         stderrPath:stderrPath
+               args:args];
   } else {
     if (argc == 2 && strcmp(argv[1], "--help") == 0) {
       [self printUsage];
