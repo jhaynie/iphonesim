@@ -24,15 +24,16 @@ Through homebrew:
 
 Download an archive:
 
-    $ curl -O http://cloud.github.com/downloads/Fingertips/ios-sim/ios-sim-1.0.zip
+    $ curl -L https://github.com/Fingertips/ios-sim/zipball/1.0 -o ios-sim-1.0.zip
     $ unzip ios-sim-1.0.zip
-    $ mv ios-sim-1.0/ios-sim /usr/local/bin/
 
 Or from a git clone:
 
     $ git clone git://github.com/Fingertips/ios-sim.git
-    $ xcodebuild
-    $ mv build/Release/ios-sim /usr/local/bin/
+
+Then build and install from the source root:
+
+    $ rake install prefix=/usr/local/bin/
 
 License
 -------
