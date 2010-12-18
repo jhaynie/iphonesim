@@ -9,8 +9,10 @@ end
 
 desc "Install a Release build"
 task :install => :build do
-  if (prefix = ENV['prefix']) && File.directory?(prefix)
-    cp 'build/Release/ios-sim', prefix
+  if prefix = ENV['prefix']
+    bin_dir = File.join(prefix, 'bin')
+    mkdir_p bin_dir
+    cp 'build/Release/ios-sim', bin_dir
   else
     puts "[!] Specify a directory as the install prefix with the `prefix' env variable"
     exit 1
