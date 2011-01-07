@@ -45,7 +45,7 @@
     fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  showsdks\n");
-    fprintf(stderr, "  launch <application path> [-verbose] [-sdk <sdkversion>] [-family <family>] [-uuid <uuid>] [-env <environment file path>] [-stdout <path to stdout file>] [-stderr <path to stderr file>] [-args <remaining arguments passed through to launched application>]\n");
+    fprintf(stderr, "  launch <application path> [-verbose] [-sdk <sdkversion>] [-family ipad] [-uuid <uuid>] [-env <environment file path>] [-stdout <path to stdout file>] [-stderr <path to stderr file>] [-args <remaining arguments passed through to launched application>]\n");
 }
 
 
