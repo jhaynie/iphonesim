@@ -38,6 +38,10 @@ Then build and install from the source root:
 License
 -------
 
+Original author: Landon Fuller <landonf@plausiblelabs.com>
+Copyright (c) 2008-2011 Plausible Labs Cooperative, Inc.
+All rights reserved.
+
 This project is available under the MIT license. See [LICENSE][license].
 
-[license]: https://github.com/Fingertips/iphonesim/blob/master/LICENSE
+[license]: https://github.com/Fingertips/ios-sim/blob/master/LICENSE
