@@ -81,7 +81,16 @@
 			nsprintf(@"Session started");	
 		}
     } else {
-        nsprintf(@"Session could not be started: %@", error);
+		NSMutableArray *errorLines = [NSMutableArray arrayWithObject:@"Session could not be started (errors below):"];
+		for (NSError *innerError = error; innerError != nil; innerError = [[innerError userInfo] objectForKey:NSUnderlyingErrorKey]) {
+			[errorLines addObject:[NSString stringWithFormat:
+								   @"%@ %@ %@",
+								   innerError,
+								   [innerError localizedDescription],
+								   [innerError userInfo]]];
+		} 
+		NSString *errorMessage = [errorLines componentsJoinedByString:@"\n"];
+        nsprintf(errorMessage);
         exit(EXIT_FAILURE);
     }
 }
