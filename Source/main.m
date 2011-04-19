@@ -39,7 +39,7 @@
  */
 int main (int argc, char *argv[]) {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    iPhoneSimulator *sim = [[iPhoneSimulator alloc] init];
+    iPhoneSimulator *sim = [[[iPhoneSimulator alloc] init] autorelease];
     
     /* Execute command line handler */
     [sim runWithArgc: argc argv: argv];
