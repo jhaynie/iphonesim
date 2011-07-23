@@ -33,7 +33,7 @@ Or from a git clone:
 
 Then build and install from the source root:
 
-    $ rake install prefix=/usr/local/bin/
+    $ rake install prefix=/usr/local/
 
 License
 -------
