@@ -79,7 +79,7 @@
     if (verbose) {
       nsprintf(@"Session started");
     }
-    if (exit_on_startup) {
+    if (exitOnStartup) {
       exit(EXIT_SUCCESS);
     }
   } else {
@@ -90,14 +90,21 @@
 
 
 - (void)stdioDataIsAvailable:(NSNotification *)notification {
+  [[notification object] readInBackgroundAndNotify];
   NSData *data = [[notification userInfo] valueForKey:NSFileHandleNotificationDataItem];
   NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  if (!alreadyPrintedData) {
+    if ([str length] == 0) {
+      return;
+    } else {
+      alreadyPrintedData = YES;
+    }
+  }
   if ([notification object] == stdoutFileHandle) {
     printf("%s", [str UTF8String]);
   } else {
     nsprintf(str);
   }
-  [[notification object] readInBackgroundAndNotify];
 }
 
 
@@ -170,14 +177,14 @@
 
   if (stderrPath) {
     stderrFileHandle = nil;
-  } else if (!exit_on_startup) {
+  } else if (!exitOnStartup) {
     [self createStdioFIFO:&stderrFileHandle ofType:@"stderr" atPath:&stderrPath];
   }
   [config setSimulatedApplicationStdErrPath:stderrPath];
 
   if (stdoutPath) {
     stdoutFileHandle = nil;
-  } else if (!exit_on_startup) {
+  } else if (!exitOnStartup) {
     [self createStdioFIFO:&stdoutFileHandle ofType:@"stdout" atPath:&stdoutPath];
   }
   [config setSimulatedApplicationStdOutPath:stdoutPath];
@@ -227,6 +234,9 @@
     exit(EXIT_FAILURE);
   }
 
+  exitOnStartup = NO;
+  alreadyPrintedData = NO;
+
   if (strcmp(argv[1], "showsdks") == 0) {
     exit([self showSDKs]);
   } else if (strcmp(argv[1], "launch") == 0) {
@@ -253,7 +263,7 @@
       } else if (strcmp(argv[i], "--verbose") == 0) {
         verbose = YES;
       } else if (strcmp(argv[i], "--exit") == 0) {
-        exit_on_startup = YES;
+        exitOnStartup = YES;
       }
       else if (strcmp(argv[i], "--sdk") == 0) {
         i++;
