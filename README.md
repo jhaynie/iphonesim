@@ -24,8 +24,8 @@ Through homebrew:
 
 Download an archive:
 
-    $ curl -L https://github.com/Fingertips/ios-sim/zipball/1.1 -o ios-sim-1.1.zip
-    $ unzip ios-sim-1.1.zip
+    $ curl -L https://github.com/Fingertips/ios-sim/zipball/1.2 -o ios-sim-1.2.zip
+    $ unzip ios-sim-1.2.zip
 
 Or from a git clone:
 
