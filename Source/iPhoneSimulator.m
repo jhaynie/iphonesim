@@ -33,8 +33,8 @@
   fprintf(stderr, "  --uuid <uuid>                   A UUID identifying the session (is that correct?)\n");
   fprintf(stderr, "  --env <environment file path>   A plist file containing environment key-value pairs that should be set\n");
   fprintf(stderr, "  --setenv NAME=VALUE             Set an environment variable\n");
-  fprintf(stderr, "  --stdout <stdout file path>     The path where stdout of the simulator will be redirected to (defaults to stdout of iphonesim)\n");
-  fprintf(stderr, "  --stderr <stderr file path>     The path where stderr of the simulator will be redirected to (defaults to stderr of iphonesim)\n");
+  fprintf(stderr, "  --stdout <stdout file path>     The path where stdout of the simulator will be redirected to (defaults to stdout of ios-sim)\n");
+  fprintf(stderr, "  --stderr <stderr file path>     The path where stderr of the simulator will be redirected to (defaults to stderr of ios-sim)\n");
   fprintf(stderr, "  --args <...>                    All following arguments will be passed on to the application\n");
 }
 
@@ -102,7 +102,7 @@
 
 
 - (void)createStdioFIFO:(NSFileHandle **)fileHandle ofType:(NSString *)type atPath:(NSString **)path {
-  *path = [NSString stringWithFormat:@"%@/iphonesim-%@-pipe-%d", NSTemporaryDirectory(), type, (int)time(NULL)];
+  *path = [NSString stringWithFormat:@"%@/ios-sim-%@-pipe-%d", NSTemporaryDirectory(), type, (int)time(NULL)];
   if (mkfifo([*path UTF8String], S_IRUSR | S_IWUSR) == -1) {
     nsprintf(@"Unable to create %@ named pipe `%@'", type, *path);
     exit(EXIT_FAILURE);
@@ -182,7 +182,7 @@
   }
   [config setSimulatedApplicationStdOutPath:stdoutPath];
 
-  [config setLocalizedClientName: @"iphonesim"];
+  [config setLocalizedClientName: @"ios-sim"];
 
   // this was introduced in 3.2 of SDK
   if ([config respondsToSelector:@selector(setSimulatedDeviceFamily:)]) {
