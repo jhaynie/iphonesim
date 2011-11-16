@@ -15,6 +15,7 @@
   NSFileHandle *stdoutFileHandle;
   NSFileHandle *stderrFileHandle;
   BOOL exitOnStartup;
+  BOOL retinaDevice;
   BOOL verbose;
   BOOL alreadyPrintedData;
 }

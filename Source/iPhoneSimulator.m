@@ -11,6 +11,9 @@
 #import <sys/types.h>
 #import <sys/stat.h>
 
+NSString* simulatorAppId = @"com.apple.iphonesimulator";
+NSString* deviceProperty = @"SimulateDevice";
+
 /**
  * A simple iPhoneSimulatorRemoteClient framework.
  */
@@ -28,6 +31,7 @@
   fprintf(stderr, "  --help                          Show this help text\n");
   fprintf(stderr, "  --verbose                       Set the output level to verbose\n");
   fprintf(stderr, "  --exit                          Exit after startup\n");
+  fprintf(stderr, "  --retina                        Start as a retina device\n");
   fprintf(stderr, "  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)\n");
   fprintf(stderr, "  --family <device family>        The device type that should be simulated (defaults to `iphone')\n");
   fprintf(stderr, "  --uuid <uuid>                   A UUID identifying the session (is that correct?)\n");
@@ -207,7 +211,19 @@
       [config setSimulatedDeviceFamily:[NSNumber numberWithInt:1]];
     }
   }
-
+    
+  /* Set up the preferences (necessary for retina support) */
+  if (retinaDevice) {
+      CFPreferencesSetAppValue((CFStringRef)deviceProperty, 
+                               (CFPropertyListRef)@"iPhone (Retina)", 
+                               (CFStringRef)simulatorAppId);
+  } else {
+      CFPreferencesSetAppValue((CFStringRef)deviceProperty,
+                               (CFPropertyListRef)@"iPhone", 
+                               (CFStringRef)simulatorAppId);
+  }
+  CFPreferencesAppSynchronize((CFStringRef)simulatorAppId);
+    
   /* Start the session */
   session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
   [session setDelegate:self];
@@ -236,6 +252,7 @@
 
   exitOnStartup = NO;
   alreadyPrintedData = NO;
+  retinaDevice = NO;
 
   if (strcmp(argv[1], "showsdks") == 0) {
     exit([self showSDKs]);
@@ -311,6 +328,9 @@
       } else if (strcmp(argv[i], "--args") == 0) {
         i++;
         break;
+      } else if (strcmp(argv[i], "--retina") == 0) {
+        retinaDevice = YES;
+        i++;
       } else {
         fprintf(stderr, "unrecognized argument:%s\n", argv[i]);
         [self printUsage];
