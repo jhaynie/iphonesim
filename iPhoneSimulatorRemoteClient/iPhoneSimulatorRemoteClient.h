@@ -66,6 +66,8 @@
     NSString *_simulatedApplicationStdErrPath;
 }
 
++ (id)displayNameForDeviceFamily:(id)family;
+
 - (id)simulatedApplicationStdErrPath;
 - (void)setSimulatedApplicationStdErrPath:(id)fp8;
 - (id)simulatedApplicationStdOutPath;

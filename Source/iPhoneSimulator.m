@@ -12,7 +12,6 @@
 #import <sys/stat.h>
 
 NSString* simulatorAppId = @"com.apple.iphonesimulator";
-NSString* deviceProperty = @"SimulateDevice";
 
 /**
  * A simple iPhoneSimulatorRemoteClient framework.
@@ -206,22 +205,33 @@ NSString* deviceProperty = @"SimulateDevice";
     }
 
     if ([family isEqualToString:@"ipad"]) {
-[config setSimulatedDeviceFamily:[NSNumber numberWithInt:2]];
+      [config setSimulatedDeviceFamily:[NSNumber numberWithInt:2]];
     } else{
       [config setSimulatedDeviceFamily:[NSNumber numberWithInt:1]];
     }
   }
     
-  /* Set up the preferences (necessary for retina support) */
+  /* 
+   * Set up the preferences (necessary for retina support) 
+   * Because switching between ipad/iphone borks settings that apparently
+   * only retina relies on, we load an appropriate config file and
+   * re-configure the visual settings on the simulator that
+   * need to be changed.
+   */
+    NSDictionary* prefsConfig = nil;
   if (retinaDevice) {
-      CFPreferencesSetAppValue((CFStringRef)deviceProperty, 
-                               (CFPropertyListRef)@"iPhone (Retina)", 
-                               (CFStringRef)simulatorAppId);
+      prefsConfig = [NSDictionary dictionaryWithContentsOfFile:@"configs/retina.plist"];
   } else {
-      CFPreferencesSetAppValue((CFStringRef)deviceProperty,
-                               (CFPropertyListRef)@"iPhone", 
-                               (CFStringRef)simulatorAppId);
+      prefsConfig = [NSDictionary dictionaryWithContentsOfFile:@"configs/iphone.plist"];
   }
+    
+    for (NSString* key in prefsConfig) {
+        nsprintf(@"%@ : %@", key, [prefsConfig valueForKey:key]);
+        CFPreferencesSetAppValue((CFStringRef)key, 
+                                 [prefsConfig valueForKey:key], 
+                                 (CFStringRef)simulatorAppId);
+    }
+    
   CFPreferencesAppSynchronize((CFStringRef)simulatorAppId);
     
   /* Start the session */
