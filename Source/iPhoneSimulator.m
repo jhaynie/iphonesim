@@ -218,6 +218,9 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
    * re-configure the visual settings on the simulator that
    * need to be changed.
    */
+    
+    /* Disabling this for now; we need to both re-evaluate this code and wait for IDE support
+     *
     NSDictionary* prefsConfig = nil;
   if (retinaDevice) {
       prefsConfig = [NSDictionary dictionaryWithContentsOfFile:@"configs/retina.plist"];
@@ -233,6 +236,7 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
     }
     
   CFPreferencesAppSynchronize((CFStringRef)simulatorAppId);
+     */
     
   /* Start the session */
   session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
