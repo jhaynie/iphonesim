@@ -65,7 +65,7 @@
 
 - (void) session: (DTiPhoneSimulatorSession *) session didEndWithError: (NSError *) error {
     nsprintf(@"Session did end with error %@", error);
-    
+
     if (error != nil)
         exit(EXIT_FAILURE);
 
@@ -101,7 +101,7 @@
     nsprintf(@"App Spec: %@", appSpec);
 
     /* Load the default SDK root */
-    
+
     nsprintf(@"SDK Root: %@", sdkRoot);
 
     /* Set up the session configuration */
