@@ -207,6 +207,7 @@
 		{
 			uuid = [NSString stringWithUTF8String:argv[5]];
 		}
+        [iPhoneSimulator terminateAllApps];
         [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family uuid:uuid];
     } else {
         fprintf(stderr, "Unknown command\n");
@@ -214,5 +215,22 @@
         exit(EXIT_FAILURE);
     }
 }
+
++ (void) terminateAllApps {
+    for (NSRunningApplication *app in [[NSWorkspace sharedWorkspace] runningApplications]) {
+        if (([app.localizedName isEqualToString:@"iphonesim"] && app != [NSRunningApplication currentApplication]) ||
+            [app.bundleIdentifier isEqualToString:@"com.apple.iphonesimulator"]) {
+                [app forceTerminate];
+                [iPhoneSimulator waitForAppTermination: app];
+        }
+    }
+}
+ 
++ (void) waitForAppTermination:(NSRunningApplication *) app {
+    ProcessSerialNumber psn;
+    while (GetProcessForPID(app.processIdentifier, &psn) != procNotFound)
+        sleep(1);
+}
+
 
 @end
