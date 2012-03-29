@@ -34,6 +34,7 @@
 		2481364A115A750000E3A9BA /* nsprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nsprintf.h; path = Source/nsprintf.h; sourceTree = "<group>"; };
 		2481364B115A750000E3A9BA /* nsprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = nsprintf.m; path = Source/nsprintf.m; sourceTree = "<group>"; };
 		32A70AAB03705E1F00C91783 /* ios-sim_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ios-sim_Prefix.pch"; sourceTree = "<group>"; };
+		510E9B1215246BB10010A2B7 /* ios-sim.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "ios-sim.xcconfig"; sourceTree = "<group>"; };
 		51448B3212BCF637001F99BD /* NSString+expandPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+expandPath.h"; path = "Source/NSString+expandPath.h"; sourceTree = "<group>"; };
 		51448B3312BCF637001F99BD /* NSString+expandPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+expandPath.m"; path = "Source/NSString+expandPath.m"; sourceTree = "<group>"; };
 		51448B3512BD0328001F99BD /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = Source/version.h; sourceTree = "<group>"; };
@@ -55,6 +56,7 @@
 		08FB7794FE84155DC02AAC07 /* iphonesim */ = {
 			isa = PBXGroup;
 			children = (
+				510E9B1215246BB10010A2B7 /* ios-sim.xcconfig */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
@@ -156,13 +158,10 @@
 /* Begin XCBuildConfiguration section */
 		1DEB927508733DD40010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 510E9B1215246BB10010A2B7 /* ios-sim.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks\"",
-				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -176,13 +175,10 @@
 		};
 		1DEB927608733DD40010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 510E9B1215246BB10010A2B7 /* ios-sim.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks\"",
-				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ios-sim_Prefix.pch";
@@ -195,24 +191,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = .;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"-framework",
-					AppKit,
-					"-F$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
-					"-framework",
-					iPhoneSimulatorRemoteClient,
-					"-Wl,-rpath",
-					"-Wl,$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
-					"-Wl,-rpath",
-					"-Wl,$(DEVELOPER_DIR)/../OtherFrameworks",
-				);
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 				VALID_ARCHS = "i386 x86_64";
@@ -223,23 +206,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = .;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"-framework",
-					AppKit,
-					"-F$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
-					"-framework",
-					iPhoneSimulatorRemoteClient,
-					"-Wl,-rpath",
-					"-Wl,$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
-					"-Wl,-rpath",
-					"-Wl,$(DEVELOPER_DIR)/../OtherFrameworks",
-				);
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 				VALID_ARCHS = "i386 x86_64";
