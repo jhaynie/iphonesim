@@ -1,3 +1,5 @@
+**IMPORTANT** [Looking for a new maintainer](https://github.com/Fingertips/ios-sim/issues/20).
+
 ios-sim
 =======
 
