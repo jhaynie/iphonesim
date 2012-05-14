@@ -1,11 +1,9 @@
-**IMPORTANT** [Looking for a new maintainer](https://github.com/Fingertips/ios-sim/issues/20).
-
 ios-sim
 =======
 
 The ios-sim tool is a command-line utility that launches an iOS application on
 the iOS Simulator. This allows for niceties such as automated testing without
-having to open XCode.
+having to open Xcode.
 
 Features
 --------
@@ -47,3 +45,8 @@ All rights reserved.
 This project is available under the MIT license. See [LICENSE][license].
 
 [license]: https://github.com/Fingertips/ios-sim/blob/master/LICENSE
+
+Acknowledgements
+----------------
+
+Thanks to [Fingertips](https://github.com/fingertips) for maintaining the repo previously at [https://github.com/fingertips/ios-sim](https://github.com/fingertips/ios-sim)
