@@ -45,7 +45,7 @@
     fprintf(stderr, "Usage: iphonesim <options> <command> ...\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  showsdks\n");
-    fprintf(stderr, "  launch <application path> [sdkversion] [family] [uuid]\n");
+    fprintf(stderr, "  launch <application path> [-verbose] [-sdk <sdkversion>] [-family ipad] [-uuid <uuid>] [-env <environment file path>] [-stdout <path to stdout file>] [-stderr <path to stderr file>] [-args <remaining arguments passed through to launched application>]\n");
 }
 
 
@@ -64,7 +64,9 @@
 }
 
 - (void) session: (DTiPhoneSimulatorSession *) session didEndWithError: (NSError *) error {
-    nsprintf(@"Session did end with error %@", error);
+	if (verbose) {
+	    nsprintf(@"Session did end with error %@", error);	
+	}
     
     if (error != nil)
         exit(EXIT_FAILURE);
@@ -75,9 +77,20 @@
 
 - (void) session: (DTiPhoneSimulatorSession *) session didStart: (BOOL) started withError: (NSError *) error {
     if (started) {
-        nsprintf(@"Session started");
+		if (verbose) {
+			nsprintf(@"Session started");	
+		}
     } else {
-        nsprintf(@"Session could not be started: %@", error);
+		NSMutableArray *errorLines = [NSMutableArray arrayWithObject:@"Session could not be started (errors below):"];
+		for (NSError *innerError = error; innerError != nil; innerError = [[innerError userInfo] objectForKey:NSUnderlyingErrorKey]) {
+			[errorLines addObject:[NSString stringWithFormat:
+								   @"%@ %@ %@",
+								   innerError,
+								   [innerError localizedDescription],
+								   [innerError userInfo]]];
+		} 
+		NSString *errorMessage = [errorLines componentsJoinedByString:@"\n"];
+        nsprintf(errorMessage);
         exit(EXIT_FAILURE);
     }
 }
@@ -86,7 +99,7 @@
 /**
  * Launch the given Simulator binary.
  */
-- (int) launchApp: (NSString *) path withFamily:(NSString*)family uuid:(NSString*)uuid{
+- (int) launchApp: (NSString *) path withFamily:(NSString*)family uuid:(NSString*)uuid environment:(NSDictionary *) environment stdoutPath: (NSString *) stdoutPath stderrPath: (NSString *) stderrPath args: (NSArray *) args{
     DTiPhoneSimulatorApplicationSpecifier *appSpec;
     DTiPhoneSimulatorSessionConfig *config;
     DTiPhoneSimulatorSession *session;
@@ -98,11 +111,13 @@
         nsprintf(@"Could not load application specification for %s", path);
         return EXIT_FAILURE;
     }
-    nsprintf(@"App Spec: %@", appSpec);
-
-    /* Load the default SDK root */
-    
-    nsprintf(@"SDK Root: %@", sdkRoot);
+	if (verbose) {
+		nsprintf(@"App Spec: %@", appSpec);
+		
+		/* Load the default SDK root */
+		
+		nsprintf(@"SDK Root: %@", sdkRoot);	
+	}
 
     /* Set up the session configuration */
     config = [[[DTiPhoneSimulatorSessionConfig alloc] init] autorelease];
@@ -110,8 +125,16 @@
     [config setSimulatedSystemRoot: sdkRoot];
     [config setSimulatedApplicationShouldWaitForDebugger: NO];
 
-    [config setSimulatedApplicationLaunchArgs: [NSArray array]];
-    [config setSimulatedApplicationLaunchEnvironment: [NSDictionary dictionary]];
+    [config setSimulatedApplicationLaunchArgs: args];
+    [config setSimulatedApplicationLaunchEnvironment: environment];
+	
+	if (stderrPath) {
+		[config setSimulatedApplicationStdErrPath:stderrPath];	
+	}
+	
+	if (stdoutPath) {
+		[config setSimulatedApplicationStdOutPath:stdoutPath];	
+	}
 
     [config setLocalizedClientName: @"TitaniumDeveloper"];
 
@@ -123,7 +146,9 @@
 			family = @"iphone";
 		}
 
-		nsprintf(@"using device family %@",family);
+		if (verbose) {
+			nsprintf(@"using device family %@",family);	
+		}
 
 		if ([family isEqualToString:@"ipad"])
 		{
@@ -173,40 +198,75 @@
             [self printUsage];
             exit(EXIT_FAILURE);
         }
-        if (argc > 3) {
-            NSString* ver = [NSString stringWithCString:argv[3] encoding:NSUTF8StringEncoding];
-            NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
-            for (DTiPhoneSimulatorSystemRoot *root in roots) {
-                NSString *v = [root sdkVersion];
-                if ([v isEqualToString:ver])
-                {
-                    sdkRoot = root;
-                    break;
-                }
-            }
-            if (sdkRoot == nil)
-            {
-                fprintf(stderr,"Unknown or unsupported SDK version: %s\n",argv[3]);
-                [self showSDKs];
-                exit(EXIT_FAILURE);
-            }
-        }
-        else {
+		
+		NSString *family = nil;
+		NSString *uuid = nil;
+		NSString *stdoutPath = nil;
+		NSString *stderrPath = nil;
+		NSDictionary *environment = [NSDictionary dictionary];
+		int i = 3;
+		for (; i < argc; i++) {
+			if (strcmp(argv[i], "-verbose") ==0) {
+				verbose = YES;
+			}
+			else if (strcmp(argv[i], "-sdk") == 0) {
+				i++;
+				NSString* ver = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
+				NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
+				for (DTiPhoneSimulatorSystemRoot *root in roots) {
+					NSString *v = [root sdkVersion];
+					if ([v isEqualToString:ver])
+					{
+						sdkRoot = root;
+						break;
+					}
+				}
+				if (sdkRoot == nil)
+				{
+					fprintf(stderr,"Unknown or unsupported SDK version: %s\n",argv[i]);
+					[self showSDKs];
+					exit(EXIT_FAILURE);
+				}
+			} else if (strcmp(argv[i], "-family") == 0) {
+				i++;
+				family = [NSString stringWithUTF8String:argv[i]];
+			} else if (strcmp(argv[i], "-uuid") == 0) {
+				i++;
+				uuid = [NSString stringWithUTF8String:argv[i]];
+			} else if (strcmp(argv[i], "-env") == 0) {
+				i++;
+				environment = [NSDictionary dictionaryWithContentsOfFile:[NSString stringWithUTF8String:argv[i]]];
+				if (!environment) {
+					fprintf(stderr, "Could not read environment from file: %s\n", argv[i]);
+					[self printUsage];
+					exit(EXIT_FAILURE);
+				}
+			} else if (strcmp(argv[i], "-stdout") == 0) {
+				i++;
+				stdoutPath = [NSString stringWithUTF8String:argv[i]];
+			} else if (strcmp(argv[i], "-stderr") == 0) {
+				i++;
+				stderrPath = [NSString stringWithUTF8String:argv[i]];
+			} else if (strcmp(argv[i], "-args") == 0) {
+				i++;
+				break;
+			} else {
+				fprintf(stderr, "unrecognized argument:%s\n", argv[i]);
+				[self printUsage];
+				exit(EXIT_FAILURE);
+			}
+		}
+		NSMutableArray *args = [NSMutableArray arrayWithCapacity:argc - i];
+		for (; i < argc; i++) {
+			[args addObject:[NSString stringWithUTF8String:argv[i]]];
+		}
+		
+        if (sdkRoot == nil) {
             sdkRoot = [DTiPhoneSimulatorSystemRoot defaultRoot];
         }
 
         /* Don't exit, adds to runloop */
-		NSString *family = nil;
-		NSString *uuid = nil;
-		if (argc > 4)
-		{
-			family = [NSString stringWithUTF8String:argv[4]];
-		}
-		if (argc > 5)
-		{
-			uuid = [NSString stringWithUTF8String:argv[5]];
-		}
-        [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family uuid:uuid];
+        [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family uuid:uuid environment:environment stdoutPath:stdoutPath stderrPath:stderrPath args:args];
     } else {
         fprintf(stderr, "Unknown command\n");
         [self printUsage];

@@ -36,6 +36,7 @@
 @interface iPhoneSimulator : NSObject <DTiPhoneSimulatorSessionDelegate> {
 @private
    DTiPhoneSimulatorSystemRoot *sdkRoot;
+   BOOL verbose;
 }
 
 - (void) runWithArgc: (int) argc argv: (char **) argv;
