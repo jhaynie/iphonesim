@@ -39,5 +39,7 @@
 }
 
 - (void) runWithArgc: (int) argc argv: (char **) argv;
++ (void) terminateAllApps;
++ (void) waitForAppTermination: (NSRunningApplication *)app;
 
 @end

@@ -76,6 +76,7 @@
 - (void) session: (DTiPhoneSimulatorSession *) session didStart: (BOOL) started withError: (NSError *) error {
     if (started) {
         nsprintf(@"Session started");
+		exit(EXIT_SUCCESS);
     } else {
         nsprintf(@"Session could not be started: %@", error);
         exit(EXIT_FAILURE);
@@ -144,7 +145,7 @@
 		[session setUuid:uuid];
 	}
 
-    if (![session requestStartWithConfig: config timeout: 30 error: &error]) {
+    if (![session requestStartWithConfig: config timeout: 240 error: &error]) {
         nsprintf(@"Could not start simulator session: %@", error);
         return EXIT_FAILURE;
     }
@@ -206,6 +207,7 @@
 		{
 			uuid = [NSString stringWithUTF8String:argv[5]];
 		}
+        [iPhoneSimulator terminateAllApps];
         [self launchApp: [NSString stringWithUTF8String: argv[2]] withFamily:family uuid:uuid];
     } else {
         fprintf(stderr, "Unknown command\n");
@@ -213,5 +215,22 @@
         exit(EXIT_FAILURE);
     }
 }
+
++ (void) terminateAllApps {
+    for (NSRunningApplication *app in [[NSWorkspace sharedWorkspace] runningApplications]) {
+        if (([app.localizedName isEqualToString:@"iphonesim"] && app != [NSRunningApplication currentApplication]) ||
+            [app.bundleIdentifier isEqualToString:@"com.apple.iphonesimulator"]) {
+                [app forceTerminate];
+                [iPhoneSimulator waitForAppTermination: app];
+        }
+    }
+}
+ 
++ (void) waitForAppTermination:(NSRunningApplication *) app {
+    ProcessSerialNumber psn;
+    while (GetProcessForPID(app.processIdentifier, &psn) != procNotFound)
+        sleep(1);
+}
+
 
 @end
