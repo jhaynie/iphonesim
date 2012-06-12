@@ -2,3 +2,4 @@ build
 iphonesim
 iphonesim.xcodeproj/*.mode1v3
 iphonesim.xcodeproj/*.pbxuser
+xcuserdata
