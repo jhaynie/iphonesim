@@ -103,7 +103,7 @@
   if ([notification object] == stdoutFileHandle) {
     printf("%s", [str UTF8String]);
   } else {
-    nsprintf(@"%s", str);
+    nsprintf(@"%@", str);
   }
 }
 
