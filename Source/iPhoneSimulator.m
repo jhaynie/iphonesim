@@ -262,7 +262,7 @@
     }
     else {
       argOffset = 3;
-      [[NSString stringWithUTF8String:argv[2]] expandPath];
+      appPath = [[NSString stringWithUTF8String:argv[2]] expandPath];
     }
 
     NSString *family = nil;
