@@ -363,7 +363,6 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
         NSLog(@"stderrPath: %@", stderrPath);
       } else if (strcmp(argv[i], "--retina") == 0) {
           retinaDevice = YES;
-          i++;
       } else if (strcmp(argv[i], "--args") == 0) {
         i++;
         break;
