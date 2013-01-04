@@ -13,7 +13,8 @@
 
 NSString *simulatorPrefrencesName = @"com.apple.iphonesimulator";
 NSString *deviceProperty = @"SimulateDevice";
-NSString *deviceIphoneRetina = @"iPhone (Retina 3.5-inch)";
+NSString *deviceIphoneRetina3_5Inch = @"iPhone (Retina 3.5-inch)";
+NSString *deviceIphoneRetina4_0Inch = @"iPhone (Retina 4-inch)";
 NSString *deviceIphone = @"iPhone";
 NSString *deviceIpad = @"iPad";
 NSString *deviceIpadRetina = @"iPad (Retina)";
@@ -41,6 +42,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   fprintf(stderr, "  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)\n");
   fprintf(stderr, "  --family <device family>        The device type that should be simulated (defaults to `iphone')\n");
   fprintf(stderr, "  --retina                        Start a retina device\n");
+  fprintf(stderr, "  --tall                          In combination with --retina flag, start the tall version of the retina device (e.g. iPhone 5 (4-inch))\n");
   fprintf(stderr, "  --uuid <uuid>                   A UUID identifying the session (is that correct?)\n");
   fprintf(stderr, "  --env <environment file path>   A plist file containing environment key-value pairs that should be set\n");
   fprintf(stderr, "  --setenv NAME=VALUE             Set an environment variable\n");
@@ -237,7 +239,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
     }
   }
     
-  [self changeDeviceType:family retina:retinaDevice];
+  [self changeDeviceType:family retina:retinaDevice isTallDevice:tallDevice];
 
   /* Start the session */
   session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
@@ -254,7 +256,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   return EXIT_SUCCESS;
 }
 
-- (void) changeDeviceType:(NSString *)family retina:(BOOL)retina {
+- (void) changeDeviceType:(NSString *)family retina:(BOOL)retina isTallDevice:(BOOL)isTallDevice {
   NSString *devicePropertyValue;
   if (retina) {
     if (verbose) {
@@ -264,7 +266,11 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
       devicePropertyValue = deviceIpadRetina;
     }
     else {
-      devicePropertyValue = deviceIphoneRetina;
+        if (isTallDevice) {
+            devicePropertyValue = deviceIphoneRetina4_0Inch;
+        } else {
+            devicePropertyValue = deviceIphoneRetina3_5Inch;
+        }
     }
   } else {
     if ([family isEqualToString:@"ipad"]) {
@@ -288,6 +294,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   }
 
   retinaDevice = NO;
+  tallDevice = NO;
   exitOnStartup = NO;
   alreadyPrintedData = NO;
   startOnly = strcmp(argv[1], "start") == 0;
@@ -379,6 +386,8 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
         NSLog(@"stderrPath: %@", stderrPath);
       } else if (strcmp(argv[i], "--retina") == 0) {
           retinaDevice = YES;
+      } else if (strcmp(argv[i], "--tall") == 0) {
+          tallDevice = YES;
       } else if (strcmp(argv[i], "--args") == 0) {
         i++;
         break;

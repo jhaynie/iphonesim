@@ -21,6 +21,7 @@
   BOOL verbose;
   BOOL alreadyPrintedData;
   BOOL retinaDevice;
+  BOOL tallDevice;
 }
 
 - (void)runWithArgc:(int)argc argv:(char **)argv;
