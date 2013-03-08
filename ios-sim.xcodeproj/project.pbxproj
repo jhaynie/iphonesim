@@ -237,7 +237,7 @@
 					"-Wl,$(DEVELOPER_DIR)/../OtherFrameworks",
 				);
 				PREBINDING = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = "";
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
@@ -264,7 +264,7 @@
 					"-Wl,$(DEVELOPER_DIR)/../OtherFrameworks",
 				);
 				PREBINDING = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = "";
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;
