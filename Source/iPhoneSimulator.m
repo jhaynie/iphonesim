@@ -12,7 +12,6 @@
 #import <sys/stat.h>
 
 NSString *simulatorAppId = @"com.apple.iphonesimulator";
-NSString *mobilesafariAppId = @"com.apple.mobilesafari";
 NSString *deviceProperty = @"SimulateDevice";
 NSString *deviceIphoneRetina3_5Inch = @"iPhone (Retina 3.5-inch)";
 NSString *deviceIphoneRetina4_0Inch = @"iPhone (Retina 4-inch)";
@@ -31,7 +30,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   fprintf(stderr, "Commands:\n");
   fprintf(stderr, "  showsdks                        List the available iOS SDK versions\n");
   fprintf(stderr, "  launch <application path>       Launch the application at the specified path on the iOS Simulator\n");
-  fprintf(stderr, "  launchToMobileSafari            Launch simulator without starting any app.\n");
+//fprintf(stderr, "  start                           Launch iOS Simulator without installing any app\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Options:\n");
   fprintf(stderr, "  --version                       Print the version of ios-sim\n");
@@ -201,7 +200,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   }
 
   /* Create the app specifier */
-  appSpec = startOnly ? [DTiPhoneSimulatorApplicationSpecifier specifierWithApplicationBundleIdentifier:mobilesafariAppId] : [DTiPhoneSimulatorApplicationSpecifier specifierWithApplicationPath:path];
+  appSpec = startOnly ? nil : [DTiPhoneSimulatorApplicationSpecifier specifierWithApplicationPath:path];
   if (verbose) {
     nsprintf(@"App Spec: %@", appSpec);
     nsprintf(@"SDK Root: %@", sdkRoot);
@@ -287,7 +286,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   alreadyPrintedData = NO;
   retinaDevice = NO;
   tallDevice = NO;
-  startOnly = strcmp(argv[1], "launchToMobileSafari") == 0;
+  startOnly = strcmp(argv[1], "start") == 0;
   launchFlag = strcmp(argv[1], "launch") == 0;
 
   if (strcmp(argv[1], "showsdks") == 0) {
