@@ -16,8 +16,11 @@
   NSFileHandle *stderrFileHandle;
   BOOL exitOnStartup;
   BOOL retinaDevice;
+  BOOL tallDevice;
+  BOOL startOnly;
   BOOL verbose;
   BOOL alreadyPrintedData;
+  BOOL launchFlag;
 }
 
 - (void)runWithArgc:(int)argc argv:(char **)argv;

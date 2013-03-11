@@ -11,7 +11,13 @@
 #import <sys/types.h>
 #import <sys/stat.h>
 
-NSString* simulatorAppId = @"com.apple.iphonesimulator";
+NSString *simulatorAppId = @"com.apple.iphonesimulator";
+NSString *deviceProperty = @"SimulateDevice";
+NSString *deviceIphoneRetina3_5Inch = @"iPhone (Retina 3.5-inch)";
+NSString *deviceIphoneRetina4_0Inch = @"iPhone (Retina 4-inch)";
+NSString *deviceIphone = @"iPhone";
+NSString *deviceIpad = @"iPad";
+NSString *deviceIpadRetina = @"iPad (Retina)";
 
 /**
  * A simple iPhoneSimulatorRemoteClient framework.
@@ -24,6 +30,7 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
   fprintf(stderr, "Commands:\n");
   fprintf(stderr, "  showsdks                        List the available iOS SDK versions\n");
   fprintf(stderr, "  launch <application path>       Launch the application at the specified path on the iOS Simulator\n");
+//fprintf(stderr, "  start                           Launch iOS Simulator without installing any app\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Options:\n");
   fprintf(stderr, "  --version                       Print the version of ios-sim\n");
@@ -31,6 +38,7 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
   fprintf(stderr, "  --verbose                       Set the output level to verbose\n");
   fprintf(stderr, "  --exit                          Exit after startup\n");
   fprintf(stderr, "  --retina                        Start as a retina device\n");
+  fprintf(stderr, "  --tall                          Start the tall version of the iPhone simulator(4-inch simulator), to be used in conjuction with retina flag\n");
   fprintf(stderr, "  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)\n");
   fprintf(stderr, "  --family <device family>        The device type that should be simulated (defaults to `iphone')\n");
   fprintf(stderr, "  --uuid <uuid>                   A UUID identifying the session (is that correct?)\n");
@@ -41,6 +49,32 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
   fprintf(stderr, "  --args <...>                    All following arguments will be passed on to the application\n");
 }
 
+- (void) findDeviceType:(NSString *)family {
+    NSString *devicePropertyValue;
+    if (retinaDevice) {
+        if (verbose) {
+            nsprintf(@"using retina");
+        }
+        if ([family isEqualToString:@"ipad"]) {
+            devicePropertyValue = deviceIpadRetina;
+        }
+        else {
+            if (tallDevice) {
+                devicePropertyValue = deviceIphoneRetina4_0Inch;
+            } else {
+                devicePropertyValue = deviceIphoneRetina3_5Inch;
+            }
+        }
+    } else {
+        if ([family isEqualToString:@"ipad"]) {
+            devicePropertyValue = deviceIpad;
+        } else {
+            devicePropertyValue = deviceIphone;
+        }
+    }
+    CFPreferencesSetAppValue((CFStringRef)deviceProperty, (CFPropertyListRef)devicePropertyValue, (CFStringRef)simulatorAppId);
+    CFPreferencesAppSynchronize((CFStringRef)simulatorAppId);
+}
 
 - (int) showSDKs {
   NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
@@ -78,6 +112,11 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
 
 
 - (void)session:(DTiPhoneSimulatorSession *)session didStart:(BOOL)started withError:(NSError *)error {
+  if (startOnly && session) {
+    nsprintf(@"Simulator started (no session)");
+    exit(EXIT_SUCCESS);
+  }
+
   if (started) {
     if (verbose) {
       nsprintf(@"Session started");
@@ -154,12 +193,14 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
   DTiPhoneSimulatorSession *session;
   NSError *error;
 
-  /* Create the app specifier */
-  appSpec = [DTiPhoneSimulatorApplicationSpecifier specifierWithApplicationPath:path];
-  if (appSpec == nil) {
+  NSFileManager *fileManager = [[[NSFileManager alloc] init] autorelease];
+  if (!startOnly && ![fileManager fileExistsAtPath:path]) {
     nsprintf(@"Could not load application specification for %s", path);
-    return EXIT_FAILURE;
+    exit(EXIT_FAILURE);
   }
+
+  /* Create the app specifier */
+  appSpec = startOnly ? nil : [DTiPhoneSimulatorApplicationSpecifier specifierWithApplicationPath:path];
   if (verbose) {
     nsprintf(@"App Spec: %@", appSpec);
     nsprintf(@"SDK Root: %@", sdkRoot);
@@ -211,32 +252,8 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
     }
   }
     
-  /* 
-   * Set up the preferences (necessary for retina support) 
-   * Because switching between ipad/iphone borks settings that apparently
-   * only retina relies on, we load an appropriate config file and
-   * re-configure the visual settings on the simulator that
-   * need to be changed.
-   */
-    
-    /* Disabling this for now; we need to both re-evaluate this code and wait for IDE support
-     *
-    NSDictionary* prefsConfig = nil;
-  if (retinaDevice) {
-      prefsConfig = [NSDictionary dictionaryWithContentsOfFile:@"configs/retina.plist"];
-  } else {
-      prefsConfig = [NSDictionary dictionaryWithContentsOfFile:@"configs/iphone.plist"];
-  }
-    
-    for (NSString* key in prefsConfig) {
-        nsprintf(@"%@ : %@", key, [prefsConfig valueForKey:key]);
-        CFPreferencesSetAppValue((CFStringRef)key, 
-                                 [prefsConfig valueForKey:key], 
-                                 (CFStringRef)simulatorAppId);
-    }
-    
-  CFPreferencesAppSynchronize((CFStringRef)simulatorAppId);
-     */
+  /* Figure out the type of simulator we need to open up.*/
+  [self findDeviceType:family];
     
   /* Start the session */
   session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
@@ -264,26 +281,38 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
     exit(EXIT_FAILURE);
   }
 
+  /* Initializing variables*/
   exitOnStartup = NO;
   alreadyPrintedData = NO;
   retinaDevice = NO;
+  tallDevice = NO;
+  startOnly = strcmp(argv[1], "start") == 0;
+  launchFlag = strcmp(argv[1], "launch") == 0;
 
   if (strcmp(argv[1], "showsdks") == 0) {
     exit([self showSDKs]);
-  } else if (strcmp(argv[1], "launch") == 0) {
-    if (argc < 3) {
+  } else if (launchFlag || startOnly) {
+    if (launchFlag && argc < 3) {
       fprintf(stderr, "Missing application path argument\n");
       [self printUsage];
       exit(EXIT_FAILURE);
     }
 
-    NSString *appPath = [[NSString stringWithUTF8String:argv[2]] expandPath];
+    NSString *appPath = nil;
+    int numOfArgs;
+    if (startOnly) {
+      numOfArgs = 2;
+    } else {
+      numOfArgs = 3;
+      appPath = [[NSString stringWithUTF8String:argv[2]] expandPath];
+    }
+
     NSString *family = nil;
     NSString *uuid = nil;
     NSString *stdoutPath = nil;
     NSString *stderrPath = nil;
     NSMutableDictionary *environment = [NSMutableDictionary dictionary];
-    int i = 3;
+    int i = numOfArgs;
     for (; i < argc; i++) {
       if (strcmp(argv[i], "--version") == 0) {
         printf("%s\n", IOS_SIM_VERSION);
@@ -344,7 +373,8 @@ NSString* simulatorAppId = @"com.apple.iphonesimulator";
         break;
       } else if (strcmp(argv[i], "--retina") == 0) {
         retinaDevice = YES;
-        i++;
+      } else if (strcmp(argv[i], "--tall") == 0) {
+        tallDevice = YES;
       } else {
         fprintf(stderr, "unrecognized argument:%s\n", argv[i]);
         [self printUsage];
