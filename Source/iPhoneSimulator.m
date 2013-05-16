@@ -76,7 +76,7 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
         }
     }
     CFPreferencesSetAppValue((CFStringRef)deviceProperty, (CFPropertyListRef)devicePropertyValue, (CFStringRef)simulatorAppId);
-    if (![deviceScale isEqualToString:@""]) {
+    if ([deviceScale length] > 0) {
         CFPreferencesSetAppValue((CFStringRef)deviceScaleProperty, (CFPropertyListRef)deviceScale, (CFStringRef)simulatorAppId);
     }
     CFPreferencesAppSynchronize((CFStringRef)simulatorAppId);
@@ -270,7 +270,7 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
   if (uuid != nil){
     [session setUuid:uuid];
   }
-    timeout = timeout > 90 ? timeout < 500 ? timeout: 500 : 90;
+  timeout = MIN(500, MAX(90, timeout));
   if (![session requestStartWithConfig:config timeout:timeout error:&error]) {
     nsprintf(@"Could not start simulator session: %@", error);
     return EXIT_FAILURE;
@@ -296,7 +296,7 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
   tallDevice = NO;
   startOnly = strcmp(argv[1], "start") == 0;
   launchFlag = strcmp(argv[1], "launch") == 0;
-  NSString* scale = @"";
+  NSString* scale = nil;
   NSTimeInterval timeout = 90;
 
   if (strcmp(argv[1], "showsdks") == 0) {
@@ -393,7 +393,7 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
         } else if ([ver isEqualToString:@"0.5"]) {
           scale = ver;
         } else {
-          scale = [NSString stringWithFormat:@"1"];
+          scale = @"1";
         }
           
       } else if (strcmp(argv[i], "--timeout") == 0){
@@ -405,7 +405,7 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
         exit(EXIT_FAILURE);
       }
     }
-    i = i > argc ? argc : i;
+      i = MIN(argc, i);
     NSMutableArray *args = [NSMutableArray arrayWithCapacity:(argc - i)];
     for (; i < argc; i++) {
       [args addObject:[NSString stringWithUTF8String:argv[i]]];
