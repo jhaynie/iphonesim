@@ -76,7 +76,9 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
         }
     }
     CFPreferencesSetAppValue((CFStringRef)deviceProperty, (CFPropertyListRef)devicePropertyValue, (CFStringRef)simulatorAppId);
-    CFPreferencesSetAppValue((CFStringRef)deviceScaleProperty, (CFPropertyListRef)deviceScale, (CFStringRef)simulatorAppId);
+    if (![deviceScale isEqualToString:@""]) {
+        CFPreferencesSetAppValue((CFStringRef)deviceScaleProperty, (CFPropertyListRef)deviceScale, (CFStringRef)simulatorAppId);
+    }
     CFPreferencesAppSynchronize((CFStringRef)simulatorAppId);
 }
 
@@ -294,7 +296,7 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
   tallDevice = NO;
   startOnly = strcmp(argv[1], "start") == 0;
   launchFlag = strcmp(argv[1], "launch") == 0;
-  NSString* scale = @"1";
+  NSString* scale = @"";
   NSTimeInterval timeout = 90;
 
   if (strcmp(argv[1], "showsdks") == 0) {
