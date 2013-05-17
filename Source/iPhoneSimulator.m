@@ -18,6 +18,7 @@ NSString *deviceIphoneRetina4_0Inch = @"iPhone (Retina 4-inch)";
 NSString *deviceIphone = @"iPhone";
 NSString *deviceIpad = @"iPad";
 NSString *deviceIpadRetina = @"iPad (Retina)";
+NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
 
 /**
  * A simple iPhoneSimulatorRemoteClient framework.
@@ -39,6 +40,8 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   fprintf(stderr, "  --exit                          Exit after startup\n");
   fprintf(stderr, "  --retina                        Start as a retina device\n");
   fprintf(stderr, "  --tall                          Start the tall version of the iPhone simulator(4-inch simulator), to be used in conjuction with retina flag\n");
+  fprintf(stderr, "  --scale <scalefactor>           Set the scale factor of the simulator. (Permitted values are `1.0`, `0.75`, `0.50`\n");
+  fprintf(stderr, "  --timeout                       Set the timeout value for a new session from the Simulator. Default: 30 seconds \n");
   fprintf(stderr, "  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)\n");
   fprintf(stderr, "  --family <device family>        The device type that should be simulated (defaults to `iphone')\n");
   fprintf(stderr, "  --uuid <uuid>                   A UUID identifying the session (is that correct?)\n");
@@ -49,7 +52,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   fprintf(stderr, "  --args <...>                    All following arguments will be passed on to the application\n");
 }
 
-- (void) findDeviceType:(NSString *)family {
+- (void) findDeviceType:(NSString *)family withscaleFactor:(NSString*)deviceScale {
     NSString *devicePropertyValue;
     if (retinaDevice) {
         if (verbose) {
@@ -73,6 +76,9 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
         }
     }
     CFPreferencesSetAppValue((CFStringRef)deviceProperty, (CFPropertyListRef)devicePropertyValue, (CFStringRef)simulatorAppId);
+    if ([deviceScale length] > 0) {
+        CFPreferencesSetAppValue((CFStringRef)deviceScaleProperty, (CFPropertyListRef)deviceScale, (CFStringRef)simulatorAppId);
+    }
     CFPreferencesAppSynchronize((CFStringRef)simulatorAppId);
 }
 
@@ -183,11 +189,13 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
 
 
 - (int)launchApp:(NSString *)path withFamily:(NSString *)family
+                                 deviceScale:(NSString*)scaleFactor
+                                 withTimeout:(NSTimeInterval)timeout
                                         uuid:(NSString *)uuid
                                  environment:(NSDictionary *)environment
                                   stdoutPath:(NSString *)stdoutPath
                                   stderrPath:(NSString *)stderrPath
-                                        args:(NSArray *)args {
+                                        args:(NSArray *)args{
   DTiPhoneSimulatorApplicationSpecifier *appSpec;
   DTiPhoneSimulatorSessionConfig *config;
   DTiPhoneSimulatorSession *session;
@@ -253,7 +261,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   }
     
   /* Figure out the type of simulator we need to open up.*/
-  [self findDeviceType:family];
+  [self findDeviceType:family withscaleFactor:scaleFactor ];
     
   /* Start the session */
   session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
@@ -262,8 +270,8 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   if (uuid != nil){
     [session setUuid:uuid];
   }
-
-  if (![session requestStartWithConfig:config timeout:30 error:&error]) {
+  timeout = MIN(500, MAX(90, timeout));
+  if (![session requestStartWithConfig:config timeout:timeout error:&error]) {
     nsprintf(@"Could not start simulator session: %@", error);
     return EXIT_FAILURE;
   }
@@ -288,6 +296,8 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   tallDevice = NO;
   startOnly = strcmp(argv[1], "start") == 0;
   launchFlag = strcmp(argv[1], "launch") == 0;
+  NSString* scale = nil;
+  NSTimeInterval timeout = 90;
 
   if (strcmp(argv[1], "showsdks") == 0) {
     exit([self showSDKs]);
@@ -375,12 +385,27 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
         retinaDevice = YES;
       } else if (strcmp(argv[i], "--tall") == 0) {
         tallDevice = YES;
+      } else if (strcmp(argv[i], "--scale") == 0) {
+        i++;
+        NSString* ver = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
+        if ([ver isEqualToString:@"0.75"]) {
+          scale = ver;
+        } else if ([ver isEqualToString:@"0.5"]) {
+          scale = ver;
+        } else {
+          scale = @"1";
+        }
+          
+      } else if (strcmp(argv[i], "--timeout") == 0){
+          i++;
+          timeout = [[NSString  stringWithUTF8String:argv[i]] doubleValue];
       } else {
         fprintf(stderr, "unrecognized argument:%s\n", argv[i]);
         [self printUsage];
         exit(EXIT_FAILURE);
       }
     }
+      i = MIN(argc, i);
     NSMutableArray *args = [NSMutableArray arrayWithCapacity:(argc - i)];
     for (; i < argc; i++) {
       [args addObject:[NSString stringWithUTF8String:argv[i]]];
@@ -393,7 +418,9 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
     /* Don't exit, adds to runloop */
     [self launchApp:appPath
          withFamily:family
-               uuid:uuid
+        deviceScale:scale
+        withTimeout:timeout
+                uuid:uuid
         environment:environment
          stdoutPath:stdoutPath
          stderrPath:stderrPath
