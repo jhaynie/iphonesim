@@ -35,6 +35,18 @@ Then build and install from the source root:
 
     $ rake install prefix=/usr/local/
 
+tmux
+-----
+
+To get ios-sim to launch correctly within tmux use the reattach-to-user-namespace wrapper.
+
+```
+reattach-to-user-namespace ios-sim launch ./build/MyTestApp.app
+```
+*source:* https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard
+
+*brew:*  ```brew install reattach-to-user-namespace```
+
 License
 -------
 
