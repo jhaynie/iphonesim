@@ -24,8 +24,8 @@ Through homebrew:
 
 Download an archive:
 
-    $ curl -L https://github.com/phonegap/ios-sim/zipball/1.7 -o ios-sim-1.7.zip
-    $ unzip ios-sim-1.7.zip
+    $ curl -L https://github.com/phonegap/ios-sim/zipball/1.8 -o ios-sim-1.8.zip
+    $ unzip ios-sim-1.8.zip
 
 Or from a git clone:
 
