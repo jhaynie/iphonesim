@@ -1,1 +1,1 @@
-#define IOS_SIM_VERSION "1.7"
+#define IOS_SIM_VERSION "1.8"
