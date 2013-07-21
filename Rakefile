@@ -10,7 +10,17 @@ end
 desc "Install a Release build"
 task :install => :build do
   if prefix = ENV['prefix']
-    bin_dir = File.join(prefix, 'bin')
+    bin_dir = prefix
+    if !(prefix =~ /bin$/)
+      bin_dir = File.join(prefix, 'bin')
+    end
+    mkdir_p bin_dir
+    cp 'build/Release/ios-sim', bin_dir
+  elsif npm_prefix = ENV['npm_config_prefix']
+    bin_dir = npm_prefix
+    if !(npm_prefix =~ /bin$/)
+      bin_dir = File.join(npm_prefix, 'bin')
+    end
     mkdir_p bin_dir
     cp 'build/Release/ios-sim', bin_dir
   else
