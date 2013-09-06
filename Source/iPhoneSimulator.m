@@ -15,6 +15,9 @@ NSString *simulatorAppId = @"com.apple.iphonesimulator";
 NSString *deviceProperty = @"SimulateDevice";
 NSString *deviceIphoneRetina3_5Inch = @"iPhone (Retina 3.5-inch)";
 NSString *deviceIphoneRetina4_0Inch = @"iPhone (Retina 4-inch)";
+NSString *deviceIphoneRetina3_5InchiOS7 = @"iPhone Retina (3.5-inch)";
+NSString *deviceIphoneRetina4_0InchiOS7 = @"iPhone Retina (4-inch)";
+NSString *deviceIpadRetinaiOS7 = @"iPad Retina";
 NSString *deviceIphone = @"iPhone";
 NSString *deviceIpad = @"iPad";
 NSString *deviceIpadRetina = @"iPad (Retina)";
@@ -54,18 +57,44 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
 
 - (void) findDeviceType:(NSString *)family withscaleFactor:(NSString*)deviceScale {
     NSString *devicePropertyValue;
+    BOOL isiOS7 = NO;
+    NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
+    for (DTiPhoneSimulatorSystemRoot *root in roots) {
+        if ([[root sdkVersion] isEqualToString:@"7.0"]) {
+            isiOS7 = YES;
+            break;
+        }
+    }
     if (retinaDevice) {
         if (verbose) {
             nsprintf(@"using retina");
         }
         if ([family isEqualToString:@"ipad"]) {
-            devicePropertyValue = deviceIpadRetina;
+            if (isiOS7) {
+                nsprintf(@"using retina ipad ios 7");
+                devicePropertyValue = deviceIpadRetinaiOS7;
+            } else {
+                nsprintf(@"using retina ipad");
+                devicePropertyValue = deviceIpadRetina;
+            }
         }
         else {
             if (tallDevice) {
-                devicePropertyValue = deviceIphoneRetina4_0Inch;
+                if (isiOS7) {
+                    nsprintf(@"using retina iphone retina tall ios 7");
+                    devicePropertyValue = deviceIphoneRetina4_0InchiOS7;
+                } else {
+                    nsprintf(@"using retina iphone retina tall");
+                    devicePropertyValue = deviceIphoneRetina4_0Inch;
+                }
             } else {
-                devicePropertyValue = deviceIphoneRetina3_5Inch;
+                if (isiOS7) {
+                    nsprintf(@"using retina iphone retina ios 7");
+                    devicePropertyValue = deviceIphoneRetina3_5InchiOS7;
+                } else {
+                    nsprintf(@"using retina iphone retina");
+                    devicePropertyValue = deviceIphoneRetina3_5Inch;
+                }
             }
         }
     } else {
