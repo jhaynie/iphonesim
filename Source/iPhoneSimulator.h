@@ -17,6 +17,7 @@
   BOOL exitOnStartup;
   BOOL retinaDevice;
   BOOL tallDevice;
+  BOOL sim_64bit;
   BOOL startOnly;
   BOOL verbose;
   BOOL alreadyPrintedData;

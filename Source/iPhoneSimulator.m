@@ -17,6 +17,7 @@ NSString *deviceIphoneRetina3_5Inch = @"iPhone (Retina 3.5-inch)";
 NSString *deviceIphoneRetina4_0Inch = @"iPhone (Retina 4-inch)";
 NSString *deviceIphoneRetina3_5InchiOS7 = @"iPhone Retina (3.5-inch)";
 NSString *deviceIphoneRetina4_0InchiOS7 = @"iPhone Retina (4-inch)";
+NSString *deviceiPhoneRetine4_0InchiOS764bit = @"iPhone Retina (4-inch 64-bit)";
 NSString *deviceIpadRetinaiOS7 = @"iPad Retina";
 NSString *deviceIphone = @"iPhone";
 NSString *deviceIpad = @"iPad";
@@ -43,6 +44,7 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
   fprintf(stderr, "  --exit                          Exit after startup\n");
   fprintf(stderr, "  --retina                        Start as a retina device\n");
   fprintf(stderr, "  --tall                          Start the tall version of the iPhone simulator(4-inch simulator), to be used in conjuction with retina flag\n");
+  fprintf(stderr, "  --sim-64bit                      Start 64 bit version of iOS 7 simulator\n");
   fprintf(stderr, "  --scale <scalefactor>           Set the scale factor of the simulator. (Permitted values are `1.0`, `0.75`, `0.50`\n");
   fprintf(stderr, "  --timeout                       Set the timeout value for a new session from the Simulator. Default: 30 seconds \n");
   fprintf(stderr, "  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)\n");
@@ -81,8 +83,13 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
         else {
             if (tallDevice) {
                 if (isiOS7) {
-                    nsprintf(@"using retina iphone retina tall ios 7");
-                    devicePropertyValue = deviceIphoneRetina4_0InchiOS7;
+                    if (sim_64bit) {
+                        nsprintf(@"using retina iphone retina tall ios 7 64 bit");
+                        devicePropertyValue = deviceiPhoneRetine4_0InchiOS764bit;
+                    } else {
+                        nsprintf(@"using retina iphone retina tall ios 7");
+                        devicePropertyValue = deviceIphoneRetina4_0InchiOS7;
+                    }
                 } else {
                     nsprintf(@"using retina iphone retina tall");
                     devicePropertyValue = deviceIphoneRetina4_0Inch;
@@ -323,6 +330,7 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
   alreadyPrintedData = NO;
   retinaDevice = NO;
   tallDevice = NO;
+  sim_64bit = NO;
   startOnly = strcmp(argv[1], "start") == 0;
   launchFlag = strcmp(argv[1], "launch") == 0;
   NSString* scale = nil;
@@ -425,6 +433,8 @@ NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
           scale = @"1";
         }
           
+      } else if (strcmp(argv[i], "--sim-64bit") == 0) {
+          sim_64bit = YES;
       } else if (strcmp(argv[i], "--timeout") == 0){
           i++;
           timeout = [[NSString  stringWithUTF8String:argv[i]] doubleValue];
