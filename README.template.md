@@ -18,18 +18,18 @@ See the `--help` option for more info.
 Installation
 ------------
 
-Through homebrew:
+With node.js (at least 0.10.20):
 
-    $ brew install ios-sim
+    $ sudo npm install ios-sim -g
 
 Download an archive:
 
-    $ curl -L https://github.com/Fingertips/ios-sim/zipball/{{VERSION}} -o ios-sim-{{VERSION}}.zip
+    $ curl -L https://github.com/phonegap/ios-sim/zipball/{{VERSION}} -o ios-sim-{{VERSION}}.zip
     $ unzip ios-sim-{{VERSION}}.zip
 
 Or from a git clone:
 
-    $ git clone git://github.com/Fingertips/ios-sim.git
+    $ git clone git://github.com/phonegap/ios-sim.git
 
 Then build and install from the source root:
 
@@ -56,4 +56,4 @@ All rights reserved.
 
 This project is available under the MIT license. See [LICENSE][license].
 
-[license]: https://github.com/Fingertips/ios-sim/blob/master/LICENSE
+[license]: https://github.com/phonegap/ios-sim/blob/master/LICENSE
