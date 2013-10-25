@@ -35,6 +35,15 @@ Then build and install from the source root:
 
     $ rake install prefix=/usr/local/
 
+
+Development
+-----------
+
+When you want to release a version, do:
+
+    $ rake version:bump v=NEW_VERSION
+    $ rake release
+    
 tmux
 -----
 
