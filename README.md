@@ -18,18 +18,14 @@ See the `--help` option for more info.
 Installation
 ------------
 
-Through homebrew:
-
-    $ brew install ios-sim
-
-As of 1.8.2 on OS X 10.7.5, with node.js 0.10.20:
+With node.js (at least 0.10.20):
 
     $ sudo npm install ios-sim -g
 
 Download an archive:
 
-    $ curl -L https://github.com/phonegap/ios-sim/zipball/1.8 -o ios-sim-1.8.zip
-    $ unzip ios-sim-1.8.zip
+    $ curl -L https://github.com/phonegap/ios-sim/zipball/1.8.2 -o ios-sim-1.8.2.zip
+    $ unzip ios-sim-1.8.2.zip
 
 Or from a git clone:
 
@@ -39,6 +35,16 @@ Then build and install from the source root:
 
     $ rake install prefix=/usr/local/
 
+
+Development
+-----------
+
+When you want to release a version, do:
+
+    $ rake version:bump v=NEW_VERSION
+    $ rake release
+    $ npm version NEW_VERSION -m "Updated to npm version %s"
+    
 tmux
 -----
 
@@ -60,4 +66,4 @@ All rights reserved.
 
 This project is available under the MIT license. See [LICENSE][license].
 
-[license]: https://github.com/Fingertips/ios-sim/blob/master/LICENSE
+[license]: https://github.com/phonegap/ios-sim/blob/master/LICENSE
