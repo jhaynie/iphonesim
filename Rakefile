@@ -55,7 +55,6 @@ namespace :version do
       end
       Rake::Task[:readme].invoke
       sh "git commit Source/version.h README.md -m 'Release #{v}'"
-      sh "git tag -a #{v} -m 'Release #{v}'"
       puts "Bumped version to #{current_version}"
     else
       puts "[!] Specify the version with the `v' env variable"
