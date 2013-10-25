@@ -43,6 +43,7 @@ When you want to release a version, do:
 
     $ rake version:bump v=NEW_VERSION
     $ rake release
+    $ npm version NEW_VERSION -m "Updated to npm version %s"
     
 tmux
 -----
