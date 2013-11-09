@@ -332,6 +332,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
     NSString *uuid = nil;
     NSString *stdoutPath = nil;
     NSString *stderrPath = nil;
+    NSString *xctest = nil;
     NSTimeInterval timeout = 30;
     NSMutableDictionary *environment = [NSMutableDictionary dictionary];
 
@@ -386,7 +387,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
       } else if (strcmp(argv[i], "--env") == 0) {
         i++;
         NSString *envFilePath = [[NSString stringWithUTF8String:argv[i]] expandPath];
-        environment = [NSDictionary dictionaryWithContentsOfFile:envFilePath];
+        [environment setValuesForKeysWithDictionary:[NSDictionary dictionaryWithContentsOfFile:envFilePath]];
         if (!environment) {
           fprintf(stderr, "Could not read environment from file: %s\n", argv[i]);
           [self printUsage];
@@ -397,9 +398,13 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
         stdoutPath = [[NSString stringWithUTF8String:argv[i]] expandPath];
         NSLog(@"stdoutPath: %@", stdoutPath);
       } else if (strcmp(argv[i], "--stderr") == 0) {
-        i++;
-        stderrPath = [[NSString stringWithUTF8String:argv[i]] expandPath];
-        NSLog(@"stderrPath: %@", stderrPath);
+          i++;
+          stderrPath = [[NSString stringWithUTF8String:argv[i]] expandPath];
+          NSLog(@"stderrPath: %@", stderrPath);
+      } else if (strcmp(argv[i], "--xctest") == 0) {
+          i++;
+          xctest = [[NSString stringWithUTF8String:argv[i]] expandPath];
+          NSLog(@"xctest: %@", xctest);
       } else if (strcmp(argv[i], "--retina") == 0) {
           retinaDevice = YES;
       } else if (strcmp(argv[i], "--tall") == 0) {
@@ -420,6 +425,16 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
 
     if (sdkRoot == nil) {
       sdkRoot = [DTiPhoneSimulatorSystemRoot defaultRoot];
+    }
+    if (xctest) {
+        NSString *appName = [appPath lastPathComponent];
+        NSString *executableName = [appName stringByDeletingPathExtension];
+        NSString *injectionPath = @"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/IDEBundleInjection.framework/IDEBundleInjection";
+        [environment setValuesForKeysWithDictionary:@{
+                                                      @"DYLD_INSERT_LIBRARIES" : injectionPath,
+                                                      @"XCInjectBundle" : xctest,
+                                                      @"XCInjectBundleInto" : [appPath stringByAppendingFormat:@"/%@", executableName],
+                                                      }];
     }
 
     /* Don't exit, adds to runloop */
