@@ -181,9 +181,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(DEVELOPER_DIR)/../SharedFrameworks",
 					"\"$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -193,7 +196,23 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ios-sim_Prefix.pch";
 				INSTALL_PATH = /usr/local/bin;
+				LD_RUNPATH_SEARCH_PATHS = "$(DEVELOPER_DIR)/Platform/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks \"$(DEVELOPER_DIR)/../SharedFrameworks\"";
+				OTHER_LDFLAGS = (
+					"-F$(DEVELOPER_DIR)/../SharedFrameworks",
+					"-framework",
+					DVTFoundation,
+					"-framework",
+					AppKit,
+					"-F$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
+					"-framework",
+					DVTiPhoneSimulatorRemoteClient,
+					"-Wl,-rpath",
+					"-Wl,$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
+					"-Wl,-rpath",
+					"-Wl,$(DEVELOPER_DIR)/../OtherFrameworks",
+				);
 				PRODUCT_NAME = "ios-sim";
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -201,16 +220,35 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(DEVELOPER_DIR)/../SharedFrameworks",
 					"\"$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks\"",
 				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ios-sim_Prefix.pch";
 				INSTALL_PATH = /usr/local/bin;
+				LD_RUNPATH_SEARCH_PATHS = "$(DEVELOPER_DIR)/Platform/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks \"$(DEVELOPER_DIR)/../SharedFrameworks\"";
+				OTHER_LDFLAGS = (
+					"-F$(DEVELOPER_DIR)/../SharedFrameworks",
+					"-framework",
+					DVTFoundation,
+					"-framework",
+					AppKit,
+					"-F$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
+					"-framework",
+					DVTiPhoneSimulatorRemoteClient,
+					"-Wl,-rpath",
+					"-Wl,$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
+					"-Wl,-rpath",
+					"-Wl,$(DEVELOPER_DIR)/../OtherFrameworks",
+				);
 				PRODUCT_NAME = "ios-sim";
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
