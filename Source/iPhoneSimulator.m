@@ -67,38 +67,39 @@ NSString* const kSimulatorRelativePath = @"Platforms/iPhoneSimulator.platform/De
 }
 
 // Loads the Simulator framework from the given developer dir.
--(NSBundle*) LoadSimulatorFramework:(NSString*) developerDir {
+-(void) LoadSimulatorFramework:(NSString*) developerDir {
     // The Simulator framework depends on some of the other Xcode private
     // frameworks; manually load them first so everything can be linked up.
-    NSString* dvtFoundationPath = [developerDir
-                                   stringByAppendingPathComponent:kDVTFoundationRelativePath];
+    NSString* dvtFoundationPath = [developerDir stringByAppendingPathComponent:kDVTFoundationRelativePath];
+
     NSBundle* dvtFoundationBundle =
     [NSBundle bundleWithPath:dvtFoundationPath];
-    if (![dvtFoundationBundle load])
-        return nil;
-    
-    NSString* devToolsFoundationPath = [developerDir
-                                        stringByAppendingPathComponent:kDevToolsFoundationRelativePath];
+    if (![dvtFoundationBundle load]){
+        nsprintf(@"Unable to dvtFoundationBundle. Error: ");
+        exit(EXIT_FAILURE);
+        return ;
+    }
+    NSString* devToolsFoundationPath = [developerDir stringByAppendingPathComponent:kDevToolsFoundationRelativePath];
     NSBundle* devToolsFoundationBundle =
     [NSBundle bundleWithPath:devToolsFoundationPath];
-    if (![devToolsFoundationBundle load])
-        return nil;
-    
+    if (![devToolsFoundationBundle load]){
+        nsprintf(@"Unable to devToolsFoundationPath. Error: ");
+        return ;
+    }
     // Prime DVTPlatform.
     NSError* error;
     Class DVTPlatformClass = [self FindClassByName:@"DVTPlatform"];
     if (![DVTPlatformClass loadAllPlatformsReturningError:&error]) {
-        nsfprintf(stderr, @"Unable to loadAllPlatformsReturningError. Error: %@",
-                 [error localizedDescription]);
-        return nil;
+        nsprintf(@"Unable to loadAllPlatformsReturningError. Error: %@",[error localizedDescription]);
+        return ;
     }
-    
-    NSString* simBundlePath = [developerDir
-                               stringByAppendingPathComponent:kSimulatorFrameworkRelativePath];
+    NSString* simBundlePath = [developerDir stringByAppendingPathComponent:kSimulatorFrameworkRelativePath];
     NSBundle* simBundle = [NSBundle bundleWithPath:simBundlePath];
-    if (![simBundle load])
-        return nil;
-    return simBundle;
+    if (![simBundle load]){
+        nsprintf(@"Unable to load simulator framework. Error: %@",[error localizedDescription]);
+        return ;
+    }
+    return ;
 }
 
 
@@ -444,12 +445,12 @@ NSString* FindDeveloperDir() {
   NSString* scale = nil;
   NSTimeInterval timeout = 90;
 
-    NSString* developerDir = FindDeveloperDir();
-    if (!developerDir) {
-        nsprintf(@"Unable to find developer directory.");
-        exit(EXIT_FAILURE);
-    }
-    [self LoadSimulatorFramework:developerDir];
+  NSString* developerDir = FindDeveloperDir();
+  if (!developerDir) {
+    nsprintf(@"Unable to find developer directory.");
+    exit(EXIT_FAILURE);
+  }
+  [self LoadSimulatorFramework:developerDir];
 
   if (strcmp(argv[1], "showsdks") == 0) {
     exit([self showSDKs]);
