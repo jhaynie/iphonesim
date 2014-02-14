@@ -26,6 +26,7 @@
 #import "nsprintf.h"
 #import <sys/types.h>
 #import <sys/stat.h>
+@class DTiPhoneSimulatorSystemRoot;
 
 NSString *simulatorAppId = @"com.apple.iphonesimulator";
 NSString *deviceProperty = @"SimulateDevice";
@@ -142,9 +143,11 @@ NSString* FindDeveloperDir() {
   fprintf(stderr, "Commands:\n");
   fprintf(stderr, "  showsdks                        List the available iOS SDK versions\n");
   fprintf(stderr, "  launch <application path>       Launch the application at the specified path on the iOS Simulator\n");
-//fprintf(stderr, "  start                           Launch iOS Simulator without installing any app\n");
   fprintf(stderr, "\n");
+
   fprintf(stderr, "Options:\n");
+  fprintf(stderr, "xcode-dir <custom DEVELOPER_DIR>           Set the xcode to be used by ios-sim. (Should be passed in as the First argument. Defaults to `xcode-select --print-path` location\n");
+
   fprintf(stderr, "  --version                       Print the version of ios-sim\n");
   fprintf(stderr, "  --help                          Show this help text\n");
   fprintf(stderr, "  --verbose                       Set the output level to verbose\n");
@@ -152,7 +155,6 @@ NSString* FindDeveloperDir() {
   fprintf(stderr, "  --retina                        Start as a retina device\n");
   fprintf(stderr, "  --tall                          Start the tall version of the iPhone simulator(4-inch simulator), to be used in conjuction with retina flag\n");
   fprintf(stderr, "  --sim-64bit                      Start 64 bit version of iOS 7 simulator\n");
-  fprintf(stderr, "  --scale <scalefactor>           Set the scale factor of the simulator. (Permitted values are `1.0`, `0.75`, `0.50`\n");
   fprintf(stderr, "  --timeout                       Set the timeout value for a new session from the Simulator. Default: 30 seconds \n");
   fprintf(stderr, "  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)\n");
   fprintf(stderr, "  --family <device family>        The device type that should be simulated (defaults to `iphone')\n");
@@ -167,13 +169,12 @@ NSString* FindDeveloperDir() {
 - (NSString*) findDeviceType:(NSString *)family withscaleFactor:(NSString*)deviceScale {
     NSString *devicePropertyValue;
     BOOL isiOS7 = NO;
-    NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
-    for (DTiPhoneSimulatorSystemRoot *root in roots) {
-        if ([[root sdkVersion] isEqualToString:@"7.0"]) {
-            isiOS7 = YES;
-            break;
-        }
+    Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
+    DTiPhoneSimulatorApplicationSpecifier *iOS7root = [systemRootClass rootWithSDKVersion:@"7.0"];
+    if (iOS7root != nil) {
+        isiOS7 = YES;
     }
+    
     if (retinaDevice) {
         if (verbose) {
             nsprintf(@"using retina");
@@ -223,12 +224,17 @@ NSString* FindDeveloperDir() {
             devicePropertyValue = deviceIphone;
         }
     }
+    if (verbose) {
+        nsprintf(@"Simulated Device Name :: %@",devicePropertyValue);
+    }
     return devicePropertyValue;
 
 }
 
 - (int) showSDKs {
-  NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
+  Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
+    
+  NSArray *roots = [systemRootClass knownRoots];
 
   nsprintf(@"Simulator SDK Roots:");
   for (DTiPhoneSimulatorSystemRoot *root in roots) {
@@ -450,9 +456,10 @@ NSString* FindDeveloperDir() {
     nsprintf(@"Unable to find developer directory.");
     exit(EXIT_FAILURE);
   }
-  [self LoadSimulatorFramework:developerDir];
+  
 
   if (strcmp(argv[1], "showsdks") == 0) {
+    [self LoadSimulatorFramework:developerDir];
     exit([self showSDKs]);
   } else if (launchFlag || startOnly) {
     if (launchFlag && argc < 3) {
@@ -490,8 +497,10 @@ NSString* FindDeveloperDir() {
       }
       else if (strcmp(argv[i], "--sdk") == 0) {
         i++;
+        [self LoadSimulatorFramework:developerDir];
         NSString* ver = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
-        NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
+        Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
+        NSArray *roots = [systemRootClass knownRoots];
         for (DTiPhoneSimulatorSystemRoot *root in roots) {
           NSString *v = [root sdkVersion];
           if ([v isEqualToString:ver]) {
@@ -538,17 +547,9 @@ NSString* FindDeveloperDir() {
         retinaDevice = YES;
       } else if (strcmp(argv[i], "--tall") == 0) {
         tallDevice = YES;
-      } else if (strcmp(argv[i], "--scale") == 0) {
+      } else if (strcmp(argv[i], "--xcode-dir") == 0) {
         i++;
-        NSString* ver = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
-        if ([ver isEqualToString:@"0.75"]) {
-          scale = ver;
-        } else if ([ver isEqualToString:@"0.5"]) {
-          scale = ver;
-        } else {
-          scale = @"1";
-        }
-          
+        developerDir = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
       } else if (strcmp(argv[i], "--sim-64bit") == 0) {
           sim_64bit = YES;
       } else if (strcmp(argv[i], "--timeout") == 0){
@@ -567,7 +568,8 @@ NSString* FindDeveloperDir() {
     }
 
     if (sdkRoot == nil) {
-      sdkRoot = [DTiPhoneSimulatorSystemRoot defaultRoot];
+        Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
+      sdkRoot = [systemRootClass defaultRoot];
     }
 
     /* Don't exit, adds to runloop */

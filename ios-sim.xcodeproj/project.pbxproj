@@ -194,15 +194,7 @@
 				INSTALL_PATH = /usr/local/bin;
 				LD_DYLIB_INSTALL_NAME = "";
 				LD_RUNPATH_SEARCH_PATHS = "";
-				OTHER_LDFLAGS = (
-					"-framework",
-					AppKit,
-					"-framework",
-					DVTiPhoneSimulatorRemoteClient,
-					"-framework",
-					DVTFoundation,
-					"-headerpad_max_install_names",
-				);
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = "ios-sim";
 				VALID_ARCHS = x86_64;
 			};
@@ -222,15 +214,7 @@
 				INSTALL_PATH = /usr/local/bin;
 				LD_DYLIB_INSTALL_NAME = "";
 				LD_RUNPATH_SEARCH_PATHS = "";
-				OTHER_LDFLAGS = (
-					"-framework",
-					AppKit,
-					"-framework",
-					DVTiPhoneSimulatorRemoteClient,
-					"-framework",
-					DVTFoundation,
-					"-headerpad_max_install_names",
-				);
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = "ios-sim";
 				VALID_ARCHS = x86_64;
 			};
@@ -242,11 +226,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_DIR)/../SharedFrameworks",
-					"$(DEVELOPER_DIR)/../OtherFrameworks",
-					"$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -255,10 +235,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"-framework",
-					AppKit,
-				);
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = "";
 				VALID_ARCHS = "i386 x86_64";
@@ -271,11 +248,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_DIR)/../SharedFrameworks",
-					"$(DEVELOPER_DIR)/../OtherFrameworks",
-					"$(DEVELOPER_DIR)/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -283,10 +256,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"-framework",
-					AppKit,
-				);
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = "";
 				VALID_ARCHS = "i386 x86_64";
