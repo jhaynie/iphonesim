@@ -30,8 +30,6 @@
 
 NSString *simulatorAppId = @"com.apple.iphonesimulator";
 NSString *deviceProperty = @"SimulateDevice";
-NSString *deviceIphoneRetina3_5Inch = @"iPhone (Retina 3.5-inch)";
-NSString *deviceIphoneRetina4_0Inch = @"iPhone (Retina 4-inch)";
 NSString *deviceIphoneRetina3_5InchiOS7 = @"iPhone Retina (3.5-inch)";
 NSString *deviceIphoneRetina4_0InchiOS7 = @"iPhone Retina (4-inch)";
 NSString *deviceiPhoneRetine4_0InchiOS764bit = @"iPhone Retina (4-inch 64-bit)";
@@ -39,7 +37,6 @@ NSString *deviceiPadRetinaiOS764bit = @"iPad Retina (64-bit)";
 NSString *deviceIpadRetinaiOS7 = @"iPad Retina";
 NSString *deviceIphone = @"iPhone";
 NSString *deviceIpad = @"iPad";
-NSString *deviceIpadRetina = @"iPad (Retina)";
 
 
 // The path within the developer dir of the private Simulator frameworks.
@@ -164,55 +161,35 @@ NSString* FindDeveloperDir() {
   fprintf(stderr, "  --args <...>                    All following arguments will be passed on to the application\n");
 }
 
-- (NSString*) findDeviceType:(NSString *)family {
+- (NSString*) findDeviceType:(NSString *)family config:(DTiPhoneSimulatorSessionConfig*)config{
     NSString *devicePropertyValue;
-    BOOL isiOS7 = NO;
-    Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
-    DTiPhoneSimulatorApplicationSpecifier *iOS7root = [systemRootClass rootWithSDKVersion:@"7.0"];
-    if (iOS7root != nil) {
-        isiOS7 = YES;
-    }
     
     if (retinaDevice) {
         if (verbose) {
             nsprintf(@"using retina");
         }
         if ([family isEqualToString:@"ipad"]) {
-            if (isiOS7) {
-                if (sim_64bit) {
-                    if (verbose) { nsprintf(@"using retina ipad ios 7 64-bit"); }
-                    devicePropertyValue = deviceiPadRetinaiOS764bit;
-                } else {
-                    if (verbose) { nsprintf(@"using retina ipad ios 7"); }
-                    devicePropertyValue = deviceIpadRetinaiOS7;
-                }
+            if (sim_64bit) {
+                if (verbose) { nsprintf(@"using retina ipad ios 7 64-bit"); }
+                devicePropertyValue = deviceiPadRetinaiOS764bit;
             } else {
-                if (verbose) { nsprintf(@"using retina ipad"); }
-                devicePropertyValue = deviceIpadRetina;
+                if (verbose) { nsprintf(@"using retina ipad ios 7"); }
+                devicePropertyValue = deviceIpadRetinaiOS7;
             }
+            
         }
         else {
             if (tallDevice) {
-                if (isiOS7) {
-                    if (sim_64bit) {
-                        if (verbose) { nsprintf(@"using iphone retina tall ios 7 64 bit"); }
-                        devicePropertyValue = deviceiPhoneRetine4_0InchiOS764bit;
-                    } else {
-                        if (verbose) { nsprintf(@"using iphone retina tall ios 7"); }
-                        devicePropertyValue = deviceIphoneRetina4_0InchiOS7;
-                    }
+                if (sim_64bit) {
+                    if (verbose) { nsprintf(@"using iphone retina tall ios 7 64 bit"); }
+                    devicePropertyValue = deviceiPhoneRetine4_0InchiOS764bit;
                 } else {
-                    if (verbose) { nsprintf(@"using iphone retina tall"); }
-                    devicePropertyValue = deviceIphoneRetina4_0Inch;
+                    if (verbose) { nsprintf(@"using iphone retina tall ios 7"); }
+                    devicePropertyValue = deviceIphoneRetina4_0InchiOS7;
                 }
             } else {
-                if (isiOS7) {
-                    if (verbose) { nsprintf(@"using retina iphone retina ios 7"); }
-                    devicePropertyValue = deviceIphoneRetina3_5InchiOS7;
-                } else {
-                    if (verbose) { nsprintf(@"using retina iphone retina"); }
-                    devicePropertyValue = deviceIphoneRetina3_5Inch;
-                }
+                if (verbose) { nsprintf(@"using retina iphone retina ios 7"); }
+                devicePropertyValue = deviceIphoneRetina3_5InchiOS7;
             }
         }
     } else {
@@ -409,7 +386,7 @@ NSString* FindDeveloperDir() {
   }
     
   /* Figure out the type of simulator we need to open up.*/
-   NSString *deviceInfoName = [self findDeviceType:family];
+    NSString *deviceInfoName = [self findDeviceType:family config:config];
    [config setSimulatedDeviceInfoName:deviceInfoName];
   /* Start the session */
   session = [[[[self FindClassByName:@"DTiPhoneSimulatorSession"] alloc] init] autorelease];

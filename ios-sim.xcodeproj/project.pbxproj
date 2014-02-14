@@ -224,7 +224,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -238,7 +238,7 @@
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = "";
-				VALID_ARCHS = "i386 x86_64";
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -246,7 +246,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -259,7 +259,7 @@
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = "";
-				VALID_ARCHS = "i386 x86_64";
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
