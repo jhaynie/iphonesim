@@ -40,8 +40,6 @@ NSString *deviceIpadRetinaiOS7 = @"iPad Retina";
 NSString *deviceIphone = @"iPhone";
 NSString *deviceIpad = @"iPad";
 NSString *deviceIpadRetina = @"iPad (Retina)";
-NSString *deviceScaleProperty = @"SimulatorWindowLastScale";
-
 
 
 // The path within the developer dir of the private Simulator frameworks.
@@ -166,7 +164,7 @@ NSString* FindDeveloperDir() {
   fprintf(stderr, "  --args <...>                    All following arguments will be passed on to the application\n");
 }
 
-- (NSString*) findDeviceType:(NSString *)family withscaleFactor:(NSString*)deviceScale {
+- (NSString*) findDeviceType:(NSString *)family {
     NSString *devicePropertyValue;
     BOOL isiOS7 = NO;
     Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
@@ -340,7 +338,6 @@ NSString* FindDeveloperDir() {
 
 
 - (int)launchApp:(NSString *)path withFamily:(NSString *)family
-                                 deviceScale:(NSString*)scaleFactor
                                  withTimeout:(NSTimeInterval)timeout
                                         uuid:(NSString *)uuid
                                  environment:(NSDictionary *)environment
@@ -412,7 +409,7 @@ NSString* FindDeveloperDir() {
   }
     
   /* Figure out the type of simulator we need to open up.*/
-   NSString *deviceInfoName = [self findDeviceType:family withscaleFactor:scaleFactor ];
+   NSString *deviceInfoName = [self findDeviceType:family];
    [config setSimulatedDeviceInfoName:deviceInfoName];
   /* Start the session */
   session = [[[[self FindClassByName:@"DTiPhoneSimulatorSession"] alloc] init] autorelease];
@@ -448,7 +445,6 @@ NSString* FindDeveloperDir() {
   sim_64bit = NO;
   startOnly = strcmp(argv[1], "start") == 0;
   launchFlag = strcmp(argv[1], "launch") == 0;
-  NSString* scale = nil;
   NSTimeInterval timeout = 90;
 
   NSString* developerDir = FindDeveloperDir();
@@ -575,7 +571,6 @@ NSString* FindDeveloperDir() {
     /* Don't exit, adds to runloop */
     [self launchApp:appPath
          withFamily:family
-        deviceScale:scale
         withTimeout:timeout
                 uuid:uuid
         environment:environment
