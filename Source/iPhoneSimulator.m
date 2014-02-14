@@ -161,7 +161,7 @@ NSString* FindDeveloperDir() {
   fprintf(stderr, "  --args <...>                    All following arguments will be passed on to the application\n");
 }
 
-- (NSString*) findDeviceType:(NSString *)family config:(DTiPhoneSimulatorSessionConfig*)config{
+- (NSString*) findDeviceType:(NSString *)family {
     NSString *devicePropertyValue;
     
     if (retinaDevice) {
@@ -386,7 +386,7 @@ NSString* FindDeveloperDir() {
   }
     
   /* Figure out the type of simulator we need to open up.*/
-    NSString *deviceInfoName = [self findDeviceType:family config:config];
+    NSString *deviceInfoName = [self findDeviceType:family];
    [config setSimulatedDeviceInfoName:deviceInfoName];
   /* Start the session */
   session = [[[[self FindClassByName:@"DTiPhoneSimulatorSession"] alloc] init] autorelease];
