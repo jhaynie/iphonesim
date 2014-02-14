@@ -193,7 +193,7 @@
 				GCC_PREFIX_HEADER = "ios-sim_Prefix.pch";
 				INSTALL_PATH = /usr/local/bin;
 				LD_DYLIB_INSTALL_NAME = "";
-				LD_RUNPATH_SEARCH_PATHS = "$DEVELOPER_DIR/../SharedFrameworks $DEVELOPER_DIR/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/ $DEVELOPER_DIR/../OtherFrameworks";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"-framework",
 					AppKit,
@@ -221,7 +221,7 @@
 				GCC_PREFIX_HEADER = "ios-sim_Prefix.pch";
 				INSTALL_PATH = /usr/local/bin;
 				LD_DYLIB_INSTALL_NAME = "";
-				LD_RUNPATH_SEARCH_PATHS = "$DEVELOPER_DIR/../SharedFrameworks $DEVELOPER_DIR/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/ $DEVELOPER_DIR/../OtherFrameworks";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"-framework",
 					AppKit,

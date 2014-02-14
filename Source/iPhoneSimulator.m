@@ -353,7 +353,7 @@ NSString* FindDeveloperDir() {
   }
 
   /* Create the app specifier */
-  appSpec = startOnly ? nil : [DTiPhoneSimulatorApplicationSpecifier specifierWithApplicationPath:path];
+    appSpec = startOnly ? nil : [[self FindClassByName:@"DTiPhoneSimulatorApplicationSpecifier"] specifierWithApplicationPath:path];
   if (verbose) {
     nsprintf(@"App Spec: %@", appSpec);
     nsprintf(@"SDK Root: %@", sdkRoot);
@@ -364,7 +364,7 @@ NSString* FindDeveloperDir() {
   }
 
   /* Set up the session configuration */
-  config = [[[DTiPhoneSimulatorSessionConfig alloc] init] autorelease];
+  config = [[[[self FindClassByName:@"DTiPhoneSimulatorSessionConfig"] alloc] init] autorelease];
   [config setApplicationToSimulateOnStart:appSpec];
   [config setSimulatedSystemRoot:sdkRoot];
   [config setSimulatedApplicationShouldWaitForDebugger: NO];
@@ -409,7 +409,7 @@ NSString* FindDeveloperDir() {
    NSString *deviceInfoName = [self findDeviceType:family withscaleFactor:scaleFactor ];
    [config setSimulatedDeviceInfoName:deviceInfoName];
   /* Start the session */
-  session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
+  session = [[[[self FindClassByName:@"DTiPhoneSimulatorSession"] alloc] init] autorelease];
   [session setDelegate:self];
   [session setSimulatedApplicationPID: [NSNumber numberWithInt:35]];
   if (uuid != nil){
