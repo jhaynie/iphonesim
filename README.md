@@ -24,8 +24,8 @@ With node.js (at least 0.10.20):
 
 Download an archive:
 
-    $ curl -L https://github.com/phonegap/ios-sim/zipball/1.8.2 -o ios-sim-1.8.2.zip
-    $ unzip ios-sim-1.8.2.zip
+    $ curl -L https://github.com/phonegap/ios-sim/zipball/1.9.0 -o ios-sim-1.9.0.zip
+    $ unzip ios-sim-1.9.0.zip
 
 Or from a git clone:
 
