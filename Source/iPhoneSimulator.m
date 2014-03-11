@@ -10,6 +10,7 @@
 #import "nsprintf.h"
 #import <sys/types.h>
 #import <sys/stat.h>
+@class DTiPhoneSimulatorSystemRoot;
 
 NSString *simulatorPrefrencesName = @"com.apple.iphonesimulator";
 NSString *deviceProperty = @"SimulateDevice";
@@ -19,11 +20,100 @@ NSString *deviceIphone = @"iPhone";
 NSString *deviceIpad = @"iPad";
 NSString *deviceIpadRetina = @"iPad (Retina)";
 
+// The path within the developer dir of the private Simulator frameworks.
+NSString* const kSimulatorFrameworkRelativePath = @"Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework";
+NSString* const kDVTFoundationRelativePath = @"../SharedFrameworks/DVTFoundation.framework";
+NSString* const kDevToolsFoundationRelativePath = @"../OtherFrameworks/DevToolsFoundation.framework";
+NSString* const kSimulatorRelativePath = @"Platforms/iPhoneSimulator.platform/Developer/Applications/iPhone Simulator.app";
+
+
+@interface DVTPlatform : NSObject
++ (BOOL)loadAllPlatformsReturningError:(id*)arg1;
+@end
+
 /**
  * A simple iPhoneSimulatorRemoteClient framework.
  */
 @implementation iPhoneSimulator
 
+// Helper to find a class by name and die if it isn't found.
+-(Class) FindClassByName:(NSString*) nameOfClass {
+    Class theClass = NSClassFromString(nameOfClass);
+    if (!theClass) {
+        nsfprintf(stderr,@"Failed to find class %@ at runtime.", nameOfClass);
+        exit(EXIT_FAILURE);
+    }
+    return theClass;
+}
+
+// Loads the Simulator framework from the given developer dir.
+-(void) LoadSimulatorFramework:(NSString*) developerDir {
+    // The Simulator framework depends on some of the other Xcode private
+    // frameworks; manually load them first so everything can be linked up.
+    NSString* dvtFoundationPath = [developerDir stringByAppendingPathComponent:kDVTFoundationRelativePath];
+
+    NSBundle* dvtFoundationBundle =
+    [NSBundle bundleWithPath:dvtFoundationPath];
+    if (![dvtFoundationBundle load]){
+        nsprintf(@"Unable to dvtFoundationBundle. Error: ");
+        exit(EXIT_FAILURE);
+        return ;
+    }
+    NSString* devToolsFoundationPath = [developerDir stringByAppendingPathComponent:kDevToolsFoundationRelativePath];
+    NSBundle* devToolsFoundationBundle =
+    [NSBundle bundleWithPath:devToolsFoundationPath];
+    if (![devToolsFoundationBundle load]){
+        nsprintf(@"Unable to devToolsFoundationPath. Error: ");
+        return ;
+    }
+    // Prime DVTPlatform.
+    NSError* error;
+    Class DVTPlatformClass = [self FindClassByName:@"DVTPlatform"];
+    if (![DVTPlatformClass loadAllPlatformsReturningError:&error]) {
+        nsprintf(@"Unable to loadAllPlatformsReturningError. Error: %@",[error localizedDescription]);
+        return ;
+    }
+    NSString* simBundlePath = [developerDir stringByAppendingPathComponent:kSimulatorFrameworkRelativePath];
+    NSBundle* simBundle = [NSBundle bundleWithPath:simBundlePath];
+    if (![simBundle load]){
+        nsprintf(@"Unable to load simulator framework. Error: %@",[error localizedDescription]);
+        return ;
+    }
+    return ;
+}
+
+
+// Finds the developer dir via xcode-select or the DEVELOPER_DIR environment
+// variable.
+NSString* FindDeveloperDir() {
+    // Check the env first.
+    NSDictionary* env = [[NSProcessInfo processInfo] environment];
+    NSString* developerDir = [env objectForKey:@"DEVELOPER_DIR"];
+    if ([developerDir length] > 0)
+        return developerDir;
+    
+    // Go look for it via xcode-select.
+    NSTask* xcodeSelectTask = [[[NSTask alloc] init] autorelease];
+    [xcodeSelectTask setLaunchPath:@"/usr/bin/xcode-select"];
+    [xcodeSelectTask setArguments:[NSArray arrayWithObject:@"-print-path"]];
+    
+    NSPipe* outputPipe = [NSPipe pipe];
+    [xcodeSelectTask setStandardOutput:outputPipe];
+    NSFileHandle* outputFile = [outputPipe fileHandleForReading];
+    
+    [xcodeSelectTask launch];
+    NSData* outputData = [outputFile readDataToEndOfFile];
+    [xcodeSelectTask terminate];
+    
+    NSString* output =
+    [[[NSString alloc] initWithData:outputData
+                           encoding:NSUTF8StringEncoding] autorelease];
+    output = [output stringByTrimmingCharactersInSet:
+              [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if ([output length] == 0)
+        output = nil;
+    return output;
+}
 - (void) printUsage {
   fprintf(stderr, "Usage: ios-sim <command> <options> [--args ...]\n");
   fprintf(stderr, "\n");
@@ -54,7 +144,9 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
 
 
 - (int) showSDKs {
-  NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
+  Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
+
+  NSArray *roots = [systemRootClass knownRoots];
 
   nsprintf(@"Simulator SDK Roots:");
   for (DTiPhoneSimulatorSystemRoot *root in roots) {
@@ -95,7 +187,8 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   }
   if (started) {
       if (shouldStartDebugger) {
-        char*args[4] = { NULL, NULL, (char*)[[[session simulatedApplicationPID] description] UTF8String], NULL };
+        int pid  = [session simulatedApplicationPID];
+        char*args[4] = { NULL, NULL, (char*)[[@(pid) description] UTF8String], NULL };
         if (useGDB) {
           args[0] = "gdb";
           args[1] = "program";
@@ -196,7 +289,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   }
 
   /* Create the app specifier */
-  appSpec = startOnly ? nil : [DTiPhoneSimulatorApplicationSpecifier specifierWithApplicationPath:path];
+    appSpec = startOnly ? nil : [[self FindClassByName:@"DTiPhoneSimulatorApplicationSpecifier"] specifierWithApplicationPath:path];
 
   if (verbose) {
     nsprintf(@"App Spec: %@", appSpec);
@@ -208,7 +301,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   }
 
   /* Set up the session configuration */
-  config = [[[DTiPhoneSimulatorSessionConfig alloc] init] autorelease];
+  config = [[[[self FindClassByName:@"DTiPhoneSimulatorSessionConfig"] alloc] init] autorelease];
   [config setApplicationToSimulateOnStart:appSpec];
   [config setSimulatedSystemRoot:sdkRoot];
   [config setSimulatedApplicationShouldWaitForDebugger:shouldStartDebugger];
@@ -249,10 +342,11 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
     }
   }
     
-  [self changeDeviceType:family retina:retinaDevice isTallDevice:tallDevice];
+  NSString* devicePropertyValue = [self changeDeviceType:family retina:retinaDevice isTallDevice:tallDevice];
+  [config setSimulatedDeviceInfoName:devicePropertyValue];
 
   /* Start the session */
-  session = [[[DTiPhoneSimulatorSession alloc] init] autorelease];
+  session = [[[[self FindClassByName:@"DTiPhoneSimulatorSession"] alloc] init] autorelease];
   [session setDelegate:self];
   if (uuid != nil){
     [session setUuid:uuid];
@@ -266,7 +360,7 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   return EXIT_SUCCESS;
 }
 
-- (void) changeDeviceType:(NSString *)family retina:(BOOL)retina isTallDevice:(BOOL)isTallDevice {
+- (NSString*) changeDeviceType:(NSString *)family retina:(BOOL)retina isTallDevice:(BOOL)isTallDevice {
   NSString *devicePropertyValue;
   if (retina) {
     if (verbose) {
@@ -291,6 +385,8 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   }
   CFPreferencesSetAppValue((CFStringRef)deviceProperty, (CFPropertyListRef)devicePropertyValue, (CFStringRef)simulatorPrefrencesName);
   CFPreferencesAppSynchronize((CFStringRef)simulatorPrefrencesName);
+
+  return devicePropertyValue;
 }
 
 
@@ -309,7 +405,14 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
   alreadyPrintedData = NO;
   startOnly = strcmp(argv[1], "start") == 0;
 
+  NSString* developerDir = FindDeveloperDir();
+  if (!developerDir) {
+    nsprintf(@"Unable to find developer directory.");
+    exit(EXIT_FAILURE);
+  }
+
   if (strcmp(argv[1], "showsdks") == 0) {
+	[self LoadSimulatorFramework:developerDir];
     exit([self showSDKs]);
   } else if (strcmp(argv[1], "launch") == 0 || startOnly) {
     if (strcmp(argv[1], "launch") == 0 && argc < 3) {
@@ -360,8 +463,10 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
       }
       else if (strcmp(argv[i], "--sdk") == 0) {
         i++;
+	   [self LoadSimulatorFramework:developerDir];
         NSString* ver = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
-        NSArray *roots = [DTiPhoneSimulatorSystemRoot knownRoots];
+        Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
+        NSArray *roots = [systemRootClass knownRoots];
         for (DTiPhoneSimulatorSystemRoot *root in roots) {
           NSString *v = [root sdkVersion];
           if ([v isEqualToString:ver]) {
@@ -424,7 +529,9 @@ NSString *deviceIpadRetina = @"iPad (Retina)";
     }
 
     if (sdkRoot == nil) {
-      sdkRoot = [DTiPhoneSimulatorSystemRoot defaultRoot];
+	   [self LoadSimulatorFramework:developerDir];
+        Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
+        sdkRoot = [systemRootClass defaultRoot];
     }
     if (xctest) {
         NSString *appName = [appPath lastPathComponent];
