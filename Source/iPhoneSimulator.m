@@ -402,7 +402,14 @@ NSString* FindDeveloperDir() {
   alreadyPrintedData = NO;
   startOnly = strcmp(argv[1], "start") == 0;
 
+  NSString* developerDir = FindDeveloperDir();
+  if (!developerDir) {
+    nsprintf(@"Unable to find developer directory.");
+    exit(EXIT_FAILURE);
+  }
+
   if (strcmp(argv[1], "showsdks") == 0) {
+	[self LoadSimulatorFramework:developerDir];
     exit([self showSDKs]);
   } else if (strcmp(argv[1], "launch") == 0 || startOnly) {
     if (strcmp(argv[1], "launch") == 0 && argc < 3) {
@@ -453,6 +460,7 @@ NSString* FindDeveloperDir() {
       }
       else if (strcmp(argv[i], "--sdk") == 0) {
         i++;
+	   [self LoadSimulatorFramework:developerDir];
         NSString* ver = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
         Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
         NSArray *roots = [systemRootClass knownRoots];
@@ -518,6 +526,7 @@ NSString* FindDeveloperDir() {
     }
 
     if (sdkRoot == nil) {
+	   [self LoadSimulatorFramework:developerDir];
         Class systemRootClass = [self FindClassByName:@"DTiPhoneSimulatorSystemRoot"];
         sdkRoot = [systemRootClass defaultRoot];
     }
