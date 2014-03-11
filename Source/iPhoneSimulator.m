@@ -342,7 +342,8 @@ NSString* FindDeveloperDir() {
     }
   }
     
-  [self changeDeviceType:family retina:retinaDevice isTallDevice:tallDevice];
+  NSString* devicePropertyValue = [self changeDeviceType:family retina:retinaDevice isTallDevice:tallDevice];
+  [config setSimulatedDeviceInfoName:devicePropertyValue];
 
   /* Start the session */
   session = [[[[self FindClassByName:@"DTiPhoneSimulatorSession"] alloc] init] autorelease];
@@ -359,7 +360,7 @@ NSString* FindDeveloperDir() {
   return EXIT_SUCCESS;
 }
 
-- (void) changeDeviceType:(NSString *)family retina:(BOOL)retina isTallDevice:(BOOL)isTallDevice {
+- (NSString*) changeDeviceType:(NSString *)family retina:(BOOL)retina isTallDevice:(BOOL)isTallDevice {
   NSString *devicePropertyValue;
   if (retina) {
     if (verbose) {
@@ -384,6 +385,8 @@ NSString* FindDeveloperDir() {
   }
   CFPreferencesSetAppValue((CFStringRef)deviceProperty, (CFPropertyListRef)devicePropertyValue, (CFStringRef)simulatorPrefrencesName);
   CFPreferencesAppSynchronize((CFStringRef)simulatorPrefrencesName);
+
+  return devicePropertyValue;
 }
 
 
