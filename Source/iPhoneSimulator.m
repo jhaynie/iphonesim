@@ -16,9 +16,11 @@ NSString *simulatorPrefrencesName = @"com.apple.iphonesimulator";
 NSString *deviceProperty = @"SimulateDevice";
 NSString *deviceIphoneRetina3_5Inch = @"iPhone Retina (3.5-inch)";
 NSString *deviceIphoneRetina4_0Inch = @"iPhone Retina (4-inch)";
+NSString *deviceIphoneRetina4_0Inch_64bit = @"iPhone Retina (4-inch 64-bit)";
 NSString *deviceIphone = @"iPhone";
 NSString *deviceIpad = @"iPad";
 NSString *deviceIpadRetina = @"iPad Retina";
+NSString *deviceIpadRetina_64bit = @"iPad Retina (64-bit)";
 
 // The path within the developer dir of the private Simulator frameworks.
 NSString* const kSimulatorFrameworkRelativePath = @"Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework";
