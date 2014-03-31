@@ -93,20 +93,20 @@ NSString* FindDeveloperDir() {
     NSString* developerDir = [env objectForKey:@"DEVELOPER_DIR"];
     if ([developerDir length] > 0)
         return developerDir;
-    
+
     // Go look for it via xcode-select.
     NSTask* xcodeSelectTask = [[[NSTask alloc] init] autorelease];
     [xcodeSelectTask setLaunchPath:@"/usr/bin/xcode-select"];
     [xcodeSelectTask setArguments:[NSArray arrayWithObject:@"-print-path"]];
-    
+
     NSPipe* outputPipe = [NSPipe pipe];
     [xcodeSelectTask setStandardOutput:outputPipe];
     NSFileHandle* outputFile = [outputPipe fileHandleForReading];
-    
+
     [xcodeSelectTask launch];
     NSData* outputData = [outputFile readDataToEndOfFile];
     [xcodeSelectTask terminate];
-    
+
     NSString* output =
     [[[NSString alloc] initWithData:outputData
                            encoding:NSUTF8StringEncoding] autorelease];
@@ -135,6 +135,7 @@ NSString* FindDeveloperDir() {
   fprintf(stderr, "  --family <device family>        The device type that should be simulated (defaults to `iphone')\n");
   fprintf(stderr, "  --retina                        Start a retina device\n");
   fprintf(stderr, "  --tall                          In combination with --retina flag, start the tall version of the retina device (e.g. iPhone 5 (4-inch))\n");
+  fprintf(stderr, "  --64bit                         In combination with --retina flag and the --tall flag, start the 64bit version of the tall retina device (e.g. iPhone 5S (4-inch 64bit))\n");
   fprintf(stderr, "  --uuid <uuid>                   A UUID identifying the session (is that correct?)\n");
   fprintf(stderr, "  --env <environment file path>   A plist file containing environment key-value pairs that should be set\n");
   fprintf(stderr, "  --setenv NAME=VALUE             Set an environment variable\n");
@@ -343,8 +344,8 @@ NSString* FindDeveloperDir() {
       [config setSimulatedDeviceFamily:[NSNumber numberWithInt:1]];
     }
   }
-    
-  NSString* devicePropertyValue = [self changeDeviceType:family retina:retinaDevice isTallDevice:tallDevice];
+
+  NSString* devicePropertyValue = [self changeDeviceType:family retina:retinaDevice isTallDevice:tallDevice is64Bit:is64BitDevice];
   [config setSimulatedDeviceInfoName:devicePropertyValue];
 
   /* Start the session */
@@ -362,18 +363,26 @@ NSString* FindDeveloperDir() {
   return EXIT_SUCCESS;
 }
 
-- (NSString*) changeDeviceType:(NSString *)family retina:(BOOL)retina isTallDevice:(BOOL)isTallDevice {
+- (NSString*) changeDeviceType:(NSString *)family retina:(BOOL)retina isTallDevice:(BOOL)isTallDevice is64Bit:(BOOL)is64Bit {
   NSString *devicePropertyValue;
   if (retina) {
     if (verbose) {
       nsprintf(@"using retina");
     }
     if ([family isEqualToString:@"ipad"]) {
-      devicePropertyValue = deviceIpadRetina;
+      if (is64Bit) {
+        devicePropertyValue = deviceIpadRetina_64bit;
+      } else {
+        devicePropertyValue = deviceIpadRetina;
+      }
     }
     else {
         if (isTallDevice) {
+          if (is64Bit) {
+            devicePropertyValue = deviceIphoneRetina4_0Inch_64bit;
+          } else {
             devicePropertyValue = deviceIphoneRetina4_0Inch;
+          }
         } else {
             devicePropertyValue = deviceIphoneRetina3_5Inch;
         }
@@ -403,6 +412,7 @@ NSString* FindDeveloperDir() {
 
   retinaDevice = NO;
   tallDevice = NO;
+  is64BitDevice = NO;
   exitOnStartup = NO;
   alreadyPrintedData = NO;
   startOnly = strcmp(argv[1], "start") == 0;
@@ -516,6 +526,8 @@ NSString* FindDeveloperDir() {
           retinaDevice = YES;
       } else if (strcmp(argv[i], "--tall") == 0) {
           tallDevice = YES;
+      } else if (strcmp(argv[i], "--64bit") == 0) {
+          is64BitDevice = YES;
       } else if (strcmp(argv[i], "--args") == 0) {
         i++;
         break;
