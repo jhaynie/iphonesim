@@ -22,6 +22,7 @@
   BOOL alreadyPrintedData;
   BOOL retinaDevice;
   BOOL tallDevice;
+  BOOL is64BitDevice;
 }
 
 - (void)runWithArgc:(int)argc argv:(char **)argv;
