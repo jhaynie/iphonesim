@@ -35,6 +35,16 @@ Then build and install from the source root:
 
     $ rake install prefix=/usr/local/
 
+Troubleshooting
+------------
+
+Make sure you enable Developer Mode on your machine:
+    
+    $ DevToolsSecurity -enable
+
+Make sure multiple instances of launchd_sim are not running:
+    
+    $ killall launchd_sim
 
 Development
 -----------
