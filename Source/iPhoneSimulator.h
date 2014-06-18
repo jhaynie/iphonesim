@@ -23,6 +23,7 @@
   BOOL retinaDevice;
   BOOL tallDevice;
   BOOL is64BitDevice;
+  NSString *deviceTypeId;
 }
 
 - (void)runWithArgc:(int)argc argv:(char **)argv;
