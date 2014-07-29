@@ -15,12 +15,43 @@ Features
 
 See the `--help` option for more info.
 
+Usage
+-----
+
+```
+Usage: ios-sim <command> <options> [--args ...]
+
+Commands:
+  showsdks                        List the available iOS SDK versions
+  launch <application path>       Launch the application at the specified path on the iOS Simulator
+  start                           Launch iOS Simulator without an app
+
+Options:
+  --version                       Print the version of ios-sim
+  --help                          Show this help text
+  --verbose                       Set the output level to verbose
+  --exit                          Exit after startup
+  --debug                         Attach LLDB to the application on startup
+  --use-gdb                       Use GDB instead of LLDB. (Requires --debug)
+  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)
+  --family <device family>        The device type that should be simulated (defaults to `iphone')
+  --retina                        Start a retina device
+  --tall                          In combination with --retina flag, start the tall version of the retina device (e.g. iPhone 5 (4-inch))
+  --uuid <uuid>                   A UUID identifying the session (is that correct?)
+  --env <environment file path>   A plist file containing environment key-value pairs that should be set
+  --setenv NAME=VALUE             Set an environment variable
+  --stdout <stdout file path>     The path where stdout of the simulator will be redirected to (defaults to stdout of ios-sim)
+  --stderr <stderr file path>     The path where stderr of the simulator will be redirected to (defaults to stderr of ios-sim)
+  --timeout <seconds>             The timeout time to wait for a response from the Simulator. Default value: 30 seconds
+  --args <...>                    All following arguments will be passed on to the application
+```
+
 Installation
 ------------
 
 With node.js (at least 0.10.20):
 
-    $ sudo npm install ios-sim -g
+    $ npm install ios-sim -g
 
 Download an archive:
 
