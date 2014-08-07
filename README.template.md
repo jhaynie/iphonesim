@@ -23,6 +23,7 @@ Usage: ios-sim <command> <options> [--args ...]
 
 Commands:
   showsdks                        List the available iOS SDK versions
+  showdevicetypes                 List the available device types (Xcode6+)
   launch <application path>       Launch the application at the specified path on the iOS Simulator
   start                           Launch iOS Simulator without an app
 
@@ -34,9 +35,11 @@ Options:
   --debug                         Attach LLDB to the application on startup
   --use-gdb                       Use GDB instead of LLDB. (Requires --debug)
   --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)
+  --devicetypeid <device type>    The id of the device type that should be simulated (Xcode6+)
   --family <device family>        The device type that should be simulated (defaults to `iphone')
   --retina                        Start a retina device
   --tall                          In combination with --retina flag, start the tall version of the retina device (e.g. iPhone 5 (4-inch))
+  --64bit                         In combination with --retina flag and the --tall flag, start the 64bit version of the tall retina device (e.g. iPhone 5S (4-inch 64bit))
   --uuid <uuid>                   A UUID identifying the session (is that correct?)
   --env <environment file path>   A plist file containing environment key-value pairs that should be set
   --setenv NAME=VALUE             Set an environment variable
