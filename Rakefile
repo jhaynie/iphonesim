@@ -4,6 +4,7 @@ end
 
 desc "Create a Release build"
 task :build do
+  sh "xcodebuild clean -project ios-sim.xcodeproj"
   sh "xcodebuild -project ios-sim.xcodeproj -configuration Release SYMROOT=build"
 end
 
