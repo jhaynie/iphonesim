@@ -1,7 +1,7 @@
 {
   "name": "ios-sim",
   "version": "3.0.0",
-  "description": "launch iOS apps into the iOS Simulator from the command line (Xcode 5.1)",
+  "description": "launch iOS apps into the iOS Simulator from the command line (Xcode 6.0)",
   "main": "ios-sim",
   "scripts": {
     "preinstall": "rake build"
