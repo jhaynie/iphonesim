@@ -147,8 +147,9 @@ NSString* FindDeveloperDir() {
     // Check the env first.
     NSDictionary* env = [[NSProcessInfo processInfo] environment];
     NSString* developerDir = [env objectForKey:@"DEVELOPER_DIR"];
-    if ([developerDir length] > 0)
+    if ([developerDir length] > 0) {
         return developerDir;
+    }
 
     // Go look for it via xcode-select.
     NSTask* xcodeSelectTask = [[[NSTask alloc] init] autorelease];
@@ -168,8 +169,9 @@ NSString* FindDeveloperDir() {
                            encoding:NSUTF8StringEncoding] autorelease];
     output = [output stringByTrimmingCharactersInSet:
               [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if ([output length] == 0)
+    if ([output length] == 0) {
         output = nil;
+    }
     return output;
 }
 
