@@ -1,14 +1,16 @@
 ios-sim
 =======
 
+Supports Xcode 6 only since version 3.x.
+
 The ios-sim tool is a command-line utility that launches an iOS application on
 the iOS Simulator. This allows for niceties such as automated testing without
-having to open XCode.
+having to open Xcode.
 
 Features
 --------
 
-* Choose the device family to simulate, i.e. iPhone or iPad.
+* Choose the device family to simulate, i.e. iPhone or iPad. Run using "showdevicetypes" option to see available device types, and pass it in as the "devicetypeid" parameter.
 * Setup environment variables.
 * Pass arguments to the application.
 * See the stdout and stderr, or redirect them to files.
@@ -34,12 +36,6 @@ Options:
   --exit                          Exit after startup
   --debug                         Attach LLDB to the application on startup
   --use-gdb                       Use GDB instead of LLDB. (Requires --debug)
-  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)
-  --devicetypeid <device type>    The id of the device type that should be simulated (Xcode6+)
-  --family <device family>        The device type that should be simulated (defaults to `iphone')
-  --retina                        Start a retina device
-  --tall                          In combination with --retina flag, start the tall version of the retina device (e.g. iPhone 5 (4-inch))
-  --64bit                         In combination with --retina flag and the --tall flag, start the 64bit version of the tall retina device (e.g. iPhone 5S (4-inch 64bit))
   --uuid <uuid>                   A UUID identifying the session (is that correct?)
   --env <environment file path>   A plist file containing environment key-value pairs that should be set
   --setenv NAME=VALUE             Set an environment variable
@@ -47,6 +43,14 @@ Options:
   --stderr <stderr file path>     The path where stderr of the simulator will be redirected to (defaults to stderr of ios-sim)
   --timeout <seconds>             The timeout time to wait for a response from the Simulator. Default value: 30 seconds
   --args <...>                    All following arguments will be passed on to the application
+  --devicetypeid <device type>    The id of the device type that should be simulated (Xcode6+). Use 'showdevicetypes' to list devices.
+                                  e.g "com.apple.CoreSimulator.SimDeviceType.Resizable-iPhone6, 8.0"
+DEPRECATED in 3.x, use devicetypeid instead:
+  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)
+  --family <device family>        The device type that should be simulated (defaults to `iphone')
+  --retina                        Start a retina device
+  --tall                          In combination with --retina flag, start the tall version of the retina device (e.g. iPhone 5 (4-inch))
+  --64bit                         In combination with --retina flag and the --tall flag, start the 64bit version of the tall retina device (e.g. iPhone 5S (4-inch 64bit))
 ```
 
 Installation
