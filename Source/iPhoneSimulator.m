@@ -109,6 +109,37 @@ static pid_t gDebuggerProcessId;
     return ;
 }
 
+NSString* GetXcodeVersion() {
+    // Go look for it via xcodebuild.
+    NSTask* xcodeBuildTask = [[[NSTask alloc] init] autorelease];
+    [xcodeBuildTask setLaunchPath:@"/usr/bin/xcodebuild"];
+    [xcodeBuildTask setArguments:[NSArray arrayWithObject:@"-version"]];
+
+    NSPipe* outputPipe = [NSPipe pipe];
+    [xcodeBuildTask setStandardOutput:outputPipe];
+    NSFileHandle* outputFile = [outputPipe fileHandleForReading];
+
+    [xcodeBuildTask launch];
+    NSData* outputData = [outputFile readDataToEndOfFile];
+    [xcodeBuildTask terminate];
+
+    NSString* output =
+    [[[NSString alloc] initWithData:outputData
+                           encoding:NSUTF8StringEncoding] autorelease];
+    output = [output stringByTrimmingCharactersInSet:
+              [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if ([output length] == 0) {
+        output = nil;
+    } else {
+        NSArray* parts = [output componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if ([parts count] >= 2) {
+            return parts[1];
+        }
+    }
+    return output;
+}
+
+
 
 // Finds the developer dir via xcode-select or the DEVELOPER_DIR environment
 // variable.
@@ -536,6 +567,13 @@ static void ChildSignal(int arg) {
   if (argc < 2) {
     [self printUsage];
     exit(EXIT_FAILURE);
+  }
+  
+  NSString* xcodeVersion = GetXcodeVersion();
+  if (!([xcodeVersion compare:@"6.0" options:NSNumericSearch] != NSOrderedAscending)) {
+      nsprintf(@"You need to have at least Xcode 6.0 installed -- you have version %@.", xcodeVersion);
+      nsprintf(@"Run 'xcode-select --print-path' to check which version of Xcode is enabled.");
+      exit(EXIT_FAILURE);
   }
 
   retinaDevice = NO;
