@@ -2,6 +2,11 @@ def current_version
   File.read('Source/version.h').match(/IOS_SIM_VERSION "([\d\.]+)"/)[1]
 end
 
+desc "Default"
+task :default => :build do
+end
+
+
 desc "Create a Release build"
 task :build do
   sh "xcodebuild clean -project ios-sim.xcodeproj"
