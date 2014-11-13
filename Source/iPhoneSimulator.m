@@ -377,7 +377,7 @@ static void ChildSignal(int arg) {
   DTiPhoneSimulatorApplicationSpecifier *appSpec;
   DTiPhoneSimulatorSessionConfig *config;
   DTiPhoneSimulatorSession *session;
-  NSError *error;
+  NSError *error = nil;
 
   NSFileManager *fileManager = [[[NSFileManager alloc] init] autorelease];
   if (!startOnly && ![fileManager fileExistsAtPath:path]) {
@@ -464,7 +464,7 @@ static void ChildSignal(int arg) {
   }
 
   if (![session requestStartWithConfig:config timeout:timeout error:&error]) {
-    nsprintf(@"Could not start simulator session: %@", error);
+    nsprintf(@"Could not start simulator session: %@", [error localizedDescription]);
     return EXIT_FAILURE;
   }
 
