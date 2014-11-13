@@ -363,6 +363,11 @@ static void ChildSignal(int arg) {
 }
 
 
+- (BOOL) version:(NSString*)versionA isAtLeastVersion:(NSString*)versionB 
+{
+    return ([versionA compare:versionB options:NSNumericSearch] != NSOrderedAscending);
+}
+
 - (int)launchApp:(NSString *)path withFamily:(NSString *)family
                                         uuid:(NSString *)uuid
                                  environment:(NSDictionary *)environment
@@ -441,7 +446,7 @@ static void ChildSignal(int arg) {
 
     // The iOS 8 simulator treats stdout/stderr paths relative to the simulator's data directory.
     // Create symbolic links in the data directory that points at the real stdout/stderr paths.
-    if ([config.simulatedSystemRoot.sdkVersion isEqual:@"8.0"]) {
+    if ([self version:config.simulatedSystemRoot.sdkVersion isAtLeastVersion:@"8.0"]) {
       NSString* dataPath = config.device.dataPath;
       [[NSFileManager defaultManager] createSymbolicLinkAtPath:[dataPath stringByAppendingPathComponent:stdoutPath] withDestinationPath:stdoutPath error:NULL];
       [[NSFileManager defaultManager] createSymbolicLinkAtPath:[dataPath stringByAppendingPathComponent:stderrPath] withDestinationPath:stderrPath error:NULL];
