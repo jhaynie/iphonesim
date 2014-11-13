@@ -231,7 +231,7 @@ NSString* FindDeveloperDir() {
         SimDeviceSet* deviceSet = [simDeviceSet defaultSet];
         NSArray* devices = [deviceSet availableDevices];
         for (SimDevice* device in devices) {
-            nsfprintf(stderr, @"%@, %@", device.deviceType.identifier, device.runtime.versionString);
+            nsfprintf(stdout, @"%@, %@", device.deviceType.identifier, device.runtime.versionString);
         }
     }
 
