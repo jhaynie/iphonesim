@@ -71,7 +71,7 @@ static pid_t gDebuggerProcessId;
     NSBundle* dvtFoundationBundle =
     [NSBundle bundleWithPath:dvtFoundationPath];
     if (![dvtFoundationBundle load]){
-        nsprintf(@"Unable to dvtFoundationBundle. Error: ");
+        nsprintf(@"Unable to dvtFoundationBundle %@", dvtFoundationPath);
         exit(EXIT_FAILURE);
         return ;
     }
@@ -79,19 +79,19 @@ static pid_t gDebuggerProcessId;
     NSBundle* devToolsFoundationBundle =
     [NSBundle bundleWithPath:devToolsFoundationPath];
     if (![devToolsFoundationBundle load]){
-        nsprintf(@"Unable to devToolsFoundationPath. Error: ");
+        nsprintf(@"Unable to devToolsFoundationPath %@", devToolsFoundationPath);
         return ;
     }
     NSString* coreSimulatorPath = [developerDir stringByAppendingPathComponent:kCoreSimulatorRelativePath];
     if ([[NSFileManager defaultManager] fileExistsAtPath:coreSimulatorPath]) {
         NSBundle* coreSimulatorBundle = [NSBundle bundleWithPath:coreSimulatorPath];
         if (![coreSimulatorBundle load]){
-            nsprintf(@"Unable to coreSimulatorPath. Error: ");
+            nsprintf(@"Unable to coreSimulatorPath %@", coreSimulatorPath);
             return ;
         }
     }
     // Prime DVTPlatform.
-    NSError* error;
+    NSError* error = nil;
     Class DVTPlatformClass = [self FindClassByName:@"DVTPlatform"];
     if (![DVTPlatformClass loadAllPlatformsReturningError:&error]) {
         nsprintf(@"Unable to loadAllPlatformsReturningError. Error: %@",[error localizedDescription]);
@@ -103,10 +103,9 @@ static pid_t gDebuggerProcessId;
     }
     NSBundle* simBundle = [NSBundle bundleWithPath:simBundlePath];
     if (![simBundle load]){
-        nsprintf(@"Unable to load simulator framework. Error: %@",[error localizedDescription]);
+        nsprintf(@"Unable to load simulator bundle %@", simBundlePath);
         return ;
     }
-    return ;
 }
 
 NSString* GetXcodeVersion() {
