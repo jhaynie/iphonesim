@@ -1,3 +1,5 @@
+> WARNING: This project is no longer supported. Please check out http://github.com/appcelerator/ioslib for replacement that works with the latest XCode.
+
 ios-sim
 =======
 
